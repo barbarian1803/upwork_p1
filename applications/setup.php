@@ -1,12 +1,12 @@
 <?php
 /**********************************************************************
     Copyright (C) FrontAccounting, LLC.
-	Released under the terms of the GNU General Public License, GPL, 
-	as published by the Free Software Foundation, either version 3 
+	Released under the terms of the GNU General Public License, GPL,
+	as published by the Free Software Foundation, either version 3
 	of the License, or (at your option) any later version.
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
     See the License here <http://www.gnu.org/licenses/gpl-3.0.html>.
 ***********************************************************************/
 class setup_app extends application
@@ -50,6 +50,10 @@ class setup_app extends application
 			"admin/printers.php?", 'SA_PRINTERS', MENU_MAINTENANCE);
 		$this->add_rapp_function(1, _("Contact &Categories"),
 			"admin/crm_categories.php?", 'SA_CRMCATEGORY', MENU_MAINTENANCE);
+		$this->add_rapp_function(1, _("Bat&ch number setup"),
+				"admin/mod_batch_number_setup.php?", 'SA_SETUPCOMPANY', MENU_MAINTENANCE);
+		$this->add_rapp_function(1, _("Assi&gn bat&ch number"),
+				"admin/mod_batch_number_assign.php?", 'SA_SETUPCOMPANY', MENU_MAINTENANCE);
 
 		$this->add_module(_("Maintenance"));
 		$this->add_lapp_function(2, _("&Void a Transaction"),
@@ -79,5 +83,3 @@ class setup_app extends application
 		$this->add_extensions();
 	}
 }
-
-
