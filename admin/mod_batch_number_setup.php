@@ -1,5 +1,7 @@
 <?php
 /***** CREATED BY BHARATA KALBUAJI ****/
+/***** CRUD page for batch number ****/
+
 
 $page_security = 'SA_SETUPCOMPANY';
 $path_to_root = "..";
