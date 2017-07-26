@@ -1,0 +1,16 @@
+[26-Jul-2017 03:10:42 Europe/Berlin] 0::session.inc:439:[before upgrade] include_once(./tmp/faillog.php): failed to open stream: No such file or directory
+[26-Jul-2017 03:10:42 Europe/Berlin] 0::session.inc:439:[before upgrade] include_once(): Failed opening './tmp/faillog.php' for inclusion (include_path='.:/usr/share/php')
+[26-Jul-2017 03:10:42 Europe/Berlin] 0::current_user.inc:686:[before upgrade] Invalid argument supplied for foreach()
+[26-Jul-2017 03:10:42 Europe/Berlin] 0::current_user.inc:686:[before upgrade] Invalid argument supplied for foreach()
+[26-Jul-2017 03:10:59 Europe/Berlin] 0::session.inc:439:[before upgrade] include_once(./tmp/faillog.php): failed to open stream: No such file or directory
+[26-Jul-2017 03:10:59 Europe/Berlin] 0::session.inc:439:[before upgrade] include_once(): Failed opening './tmp/faillog.php' for inclusion (include_path='.:/usr/share/php')
+[26-Jul-2017 03:10:59 Europe/Berlin] 0::current_user.inc:686:[before upgrade] Invalid argument supplied for foreach()
+[26-Jul-2017 03:10:59 Europe/Berlin] 0::current_user.inc:686:[before upgrade] Invalid argument supplied for foreach()
+[26-Jul-2017 03:10:59 Europe/Berlin] 0::session.inc:489:[before upgrade] include(./company/0/installed_extensions.php): failed to open stream: No such file or directory
+[26-Jul-2017 03:10:59 Europe/Berlin] 0::session.inc:489:[before upgrade] include(): Failed opening './company/0/installed_extensions.php' for inclusion (include_path='.:/usr/share/php')
+[26-Jul-2017 03:10:59 Europe/Berlin] 0::hooks.inc:239:[before upgrade] Invalid argument supplied for foreach()
+[26-Jul-2017 03:13:29 Europe/Berlin] 0::session.inc:439:[before upgrade] include_once(./tmp/faillog.php): failed to open stream: No such file or directory
+[26-Jul-2017 03:13:29 Europe/Berlin] 0::session.inc:439:[before upgrade] include_once(): Failed opening './tmp/faillog.php' for inclusion (include_path='.:/usr/share/php')
+[26-Jul-2017 03:13:35 Europe/Berlin] 0::session.inc:439:[before upgrade] include_once(./tmp/faillog.php): failed to open stream: No such file or directory
+[26-Jul-2017 03:13:35 Europe/Berlin] 0::session.inc:439:[before upgrade] include_once(): Failed opening './tmp/faillog.php' for inclusion (include_path='.:/usr/share/php')
+[26-Jul-2017 03:13:35 Europe/Berlin] 0:admin:current_user.inc:730: opendir(./company/0/js_cache/1): failed to open dir: No such file or directory
