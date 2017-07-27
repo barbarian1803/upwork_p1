@@ -31,3 +31,8 @@ function is_batch_number_used($selected_id){
   $sql =  "SELECT * FROM ".TB_PREF."mod_batch_number_assign WHERE batch_id=".$selected_id;
   return(db_num_rows(db_query($sql,"could not query batch number list"))>0);
 }
+
+function get_batch_number_assign(){
+  $sql = "SELECT * ".TB_PREF."mod_batch_number_assign";
+  
+}

@@ -7,3 +7,5 @@
 
 $page_security = 'SA_SETUPCOMPANY';
 $path_to_root = "..";
+
+include_once($path_to_root . "/includes/ui/mod_ui_lists.inc");

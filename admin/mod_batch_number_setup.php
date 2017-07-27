@@ -29,7 +29,7 @@ function can_delete($selected_id){
 if ($Mode=='ADD_ITEM' && can_process())
 {
 
-	add_batch_number($_POST['string format']);
+	add_batch_number($_POST['string_format']);
 	display_notification(_('New batch number format has been added'));
 	$Mode = 'RESET';
 }
@@ -74,7 +74,10 @@ while($row = db_fetch($all_batch)){
   label_cell($row["string_format"]);
   label_cell($row["serial_no"]);
   edit_button_cell("Edit".$row["id"], _("Edit"));
-  delete_button_cell("Delete".$row["id"], _("Delete"));
+  if($row["id"]>1)
+    delete_button_cell("Delete".$row["id"], _("Delete"));
+  else
+    echo "<td></td>";
   end_row();
 }
 end_table(1);
@@ -93,7 +96,6 @@ if ($selected_id != -1)
 	hidden('selected_id', $selected_id);
 }
 text_row_ex(_("Batch number format: "), 'string_format', 50);
-
 end_table(1);
 
 submit_add_or_update_center($selected_id == -1, '', 'both');
