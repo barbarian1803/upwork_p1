@@ -73,11 +73,13 @@ while($row = db_fetch($all_batch)){
   label_cell($no++);
   label_cell($row["string_format"]);
   label_cell($row["serial_no"]);
-  edit_button_cell("Edit".$row["id"], _("Edit"));
-  if($row["id"]>1)
+  if($row["id"]>1){
+    edit_button_cell("Edit".$row["id"], _("Edit"));
     delete_button_cell("Delete".$row["id"], _("Delete"));
-  else
+  }else{
     echo "<td></td>";
+    echo "<td></td>";
+  }
   end_row();
 }
 end_table(1);
