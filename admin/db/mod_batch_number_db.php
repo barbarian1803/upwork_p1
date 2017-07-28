@@ -32,7 +32,12 @@ function is_batch_number_used($selected_id){
   return(db_num_rows(db_query($sql,"could not query batch number list"))>0);
 }
 
-function get_batch_number_assign(){
-  $sql = "SELECT * ".TB_PREF."mod_batch_number_assign";
-  
+function get_batch_number_assign($type){
+  $sql = "SELECT * FROM ".TB_PREF."mod_batch_number_assign WHERE type=".db_escape($type);
+  return(db_fetch_assoc(db_query($sql,"could not query batch number list")));
+}
+
+function batch_number_assign($type,$value){
+  $sql = "UPDATE ".TB_PREF."mod_batch_number_assign SET batch_id=".db_escape($value)." WHERE type=".db_escape($type);
+  db_query($sql,"could not query batch number list");
 }
