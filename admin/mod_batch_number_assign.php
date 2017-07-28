@@ -16,7 +16,6 @@ include_once($path_to_root . "/admin/db/mod_batch_number_db.php");
 
 
 $batch_number = get_batch_number_assign("from_po");
-echo $batch_number["type"];
 
 if(isset($_POST["from_po"])){
   batch_number_assign("from_po",$_POST["from_po"]);
