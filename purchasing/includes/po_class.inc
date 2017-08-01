@@ -46,7 +46,7 @@ class purch_order
 	var $prepayments = array();
 
 	var $fixed_asset = false;
-
+        
 	function purch_order()
 	{
 		/*Constructor function initialises a new purchase order object */
@@ -64,19 +64,28 @@ class purch_order
 		$this->tax_group_array = get_tax_group_items_as_array($tax_group_id);
 	}
 	
-	function add_to_order($line_no, $stock_id, $qty, $item_descr, $price, $uom, $req_del_date, $qty_inv, $qty_recd)
+	function add_to_order($line_no, $stock_id, $qty, $item_descr, $price, $uom, $req_del_date, $qty_inv, $qty_recd,$batch_number="")
 	{
 		if (isset($qty) && $qty != 0)
 		{
-			$this->line_items[$line_no] = new po_line_details($line_no, $stock_id, $item_descr, $qty, $price, $uom, 
-				$req_del_date, $qty_inv, $qty_recd);
+			$this->line_items[$line_no] = new po_line_details(
+                                $line_no, 
+                                $stock_id, 
+                                $item_descr, 
+                                $qty, 
+                                $price, 
+                                $uom, 
+				$req_del_date, 
+                                $qty_inv, 
+                                $qty_recd,
+                                $batch_number);
 			$this->lines_on_order++;
 			return 1;
 		}
 		return 0;
 	}
 
-	function update_order_item($line_no, $qty, $price, $req_del_date, $description="")
+	function update_order_item($line_no, $qty, $price, $req_del_date, $description="",$batch_number="")
 	{
 		if ($description != "")
 			$this->line_items[$line_no]->item_description = $description;
@@ -84,6 +93,7 @@ class purch_order
 		$this->line_items[$line_no]->price = $price;
 		$this->line_items[$line_no]->req_del_date = $req_del_date;
 		$this->line_items[$line_no]->item_description = $description;
+                $this->line_items[$line_no]->batch_number = $batch_number;
 	}
 
 	function remove_from_order($line_no)
@@ -215,9 +225,11 @@ class po_line_details
 
 	var $standard_cost;
 	var $descr_editable;
-
+        var $batch_number;
+        
+        
 	function po_line_details($line_no, $stock_item, $item_descr, $qty, $prc, $uom, $req_del_date, 
-		$qty_inv, $qty_recd, $grn_item_id=0)
+		$qty_inv, $qty_recd,$batch_number="", $grn_item_id=0)
 	{
 
 		/* Constructor function to add a new LineDetail object with passed params */
@@ -244,6 +256,7 @@ class po_line_details
 		$this->receive_qty = 0;	/*initialise these last two only */
 		$this->standard_cost =0;
 		$this->grn_item_id = $grn_item_id;
+                $this->batch_number = $batch_number;
 	}
 	
 	// Deprecated, use with care. If you need line value as it is calculated in invoice, use taxfree_charge_value below.
