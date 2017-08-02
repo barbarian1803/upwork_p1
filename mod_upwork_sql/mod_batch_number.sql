@@ -21,3 +21,6 @@ INSERT INTO `0_mod_batch_number_assign` (`id`, `type`, `batch_id`) VALUES
 (1, 'from_po', 0),
 (2, 'from_inventory_adjustment', 0),
 (3, 'from_production', 0);
+
+
+ALTER TABLE `0_stock_moves` ADD `batch_number` VARCHAR(255) NOT NULL AFTER `standard_cost`;

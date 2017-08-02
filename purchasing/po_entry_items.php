@@ -17,6 +17,7 @@ include_once($path_to_root . "/includes/session.inc");
 include_once($path_to_root . "/purchasing/includes/purchasing_ui.inc");
 include_once($path_to_root . "/purchasing/includes/db/suppliers_db.inc");
 include_once($path_to_root . "/reporting/includes/reporting.inc");
+include_once($path_to_root . "/admin/db/mod_batch_number_db.php");
 
 set_page_security(@$_SESSION['PO']->trans_type, array(ST_PURCHORDER => 'SA_PURCHASEORDER',
     ST_SUPPRECEIVE => 'SA_GRN',
@@ -283,6 +284,14 @@ function handle_add_new_item() {
             } /* end of the foreach loop to look for pre-existing items of the same code */
         }
 
+        if($_SESSION['PO']->trans_type == ST_SUPPRECEIVE){
+            if(is_stock_batch_controlled($_POST['stock_id'])&&$_POST['batch_number']==""){
+                display_error(_("Please input batch number."));
+                line_start_focus();
+                return;
+            }
+        }
+        
         if ($allow_update == true) {
             $result = get_short_info($_POST['stock_id']);
 

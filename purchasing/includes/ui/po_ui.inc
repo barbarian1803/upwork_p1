@@ -232,7 +232,8 @@ function display_po_items(&$order, $editable = true) {
                 label_cell($po_line->req_del_date);
             amount_decimal_cell($po_line->price);
             amount_cell($line_total);
-            label_cell($po_line->batch_number);
+            if ($order->trans_type == ST_SUPPRECEIVE)
+                label_cell($po_line->batch_number);
             if ($editable) {
                 edit_button_cell("Edit$line_no", _("Edit"), _('Edit document line'));
                 delete_button_cell("Delete$line_no", _("Delete"), _('Remove line from document'));
@@ -247,7 +248,10 @@ function display_po_items(&$order, $editable = true) {
     if ($id == -1 && $editable)
         po_item_controls($order, $k);
 
-    $colspan = count($th) - 3;
+    if ($order->trans_type == ST_SUPPRECEIVE)
+        $colspan = count($th) - 3;
+    else
+        $colspan = count($th) - 2;
     if (count($order->line_items))
         $colspan--;
 
