@@ -141,6 +141,7 @@ function clear_data() {
     unset($_POST['depreciation_rate']);
     unset($_POST['depreciation_factor']);
     unset($_POST['depreciation_start']);
+    unset($_POST['is_batch_controlled']);
 }
 
 //------------------------------------------------------------------------------------
@@ -191,7 +192,7 @@ if (isset($_POST['addupdate'])) {
 
         if (!$new_item) { /* so its an existing one */
             update_item($_POST['NewStockID'], $_POST['description'], $_POST['long_description'], $_POST['category_id'], $_POST['tax_type_id'], get_post('units'), get_post('fixed_asset') ? 'F' : get_post('mb_flag'), $_POST['sales_account'], $_POST['inventory_account'], $_POST['cogs_account'], $_POST['adjustment_account'], $_POST['wip_account'], $_POST['dimension_id'], $_POST['dimension2_id'], check_value('no_sale'), check_value('editable'), check_value('no_purchase'), get_post('depreciation_method'), input_num('depreciation_rate'), input_num('depreciation_factor'), get_post('depreciation_start'), get_post('fa_class_id'));
-
+            set_batch_controlled($_POST['NewStockID'],  check_value("is_batch_controlled"));
             update_record_status($_POST['NewStockID'], $_POST['inactive'], 'stock_master', 'stock_id');
             update_record_status($_POST['NewStockID'], $_POST['inactive'], 'item_codes', 'item_code');
             set_focus('stock_id');
@@ -199,7 +200,7 @@ if (isset($_POST['addupdate'])) {
             display_notification(_("Item has been updated."));
         } else { //it is a NEW part
             add_item($_POST['NewStockID'], $_POST['description'], $_POST['long_description'], $_POST['category_id'], $_POST['tax_type_id'], $_POST['units'], get_post('fixed_asset') ? 'F' : get_post('mb_flag'), $_POST['sales_account'], $_POST['inventory_account'], $_POST['cogs_account'], $_POST['adjustment_account'], $_POST['wip_account'], $_POST['dimension_id'], $_POST['dimension2_id'], check_value('no_sale'), check_value('editable'), check_value('no_purchase'), get_post('depreciation_method'), input_num('depreciation_rate'), input_num('depreciation_factor'), get_post('depreciation_start'), get_post('fa_class_id'));
-
+            set_batch_controlled($_POST['NewStockID'],  check_value("is_batch_controlled"));
             display_notification(_("A new item has been added."));
             $_POST['stock_id'] = $_POST['NewStockID'] = $_POST['description'] = $_POST['long_description'] = '';
             $_POST['no_sale'] = $_POST['editable'] = $_POST['no_purchase'] = 0;
@@ -298,6 +299,8 @@ function item_settings(&$stock_id, $new_item) {
             $_POST['del_image'] = 0;
             $_POST['inactive'] = $myrow["inactive"];
             $_POST['editable'] = $myrow["editable"];
+            
+            $_POST['is_batch_controlled'] = $myrow["is_batch_controlled"];
         }
         label_row(_("Item Code:"), $_POST['NewStockID']);
         hidden('NewStockID', $_POST['NewStockID']);
@@ -346,7 +349,9 @@ function item_settings(&$stock_id, $new_item) {
         check_row(_("Exclude from sales:"), 'no_sale');
 
     check_row(_("Exclude from purchases:"), 'no_purchase');
-
+    
+    check_row(_("Is batch number controlled:"), 'is_batch_controlled');
+    
     if (get_post('fixed_asset')) {
         table_section_title(_("Depreciation"));
 

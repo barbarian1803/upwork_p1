@@ -24,3 +24,5 @@ INSERT INTO `0_mod_batch_number_assign` (`id`, `type`, `batch_id`) VALUES
 
 
 ALTER TABLE `0_stock_moves` ADD `batch_number` VARCHAR(255) NOT NULL AFTER `standard_cost`;
+ALTER TABLE `0_stock_master` ADD `is_batch_controlled` BOOLEAN NOT NULL AFTER `fa_class_id`;
+ALTER TABLE `0_stock_category` ADD `batch_number_id` INT NOT NULL AFTER `dflt_no_purchase`;

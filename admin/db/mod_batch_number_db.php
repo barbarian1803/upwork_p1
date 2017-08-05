@@ -50,5 +50,7 @@ function add_batch_number_in_stock_moves($cart, $id) {
 }
 
 function is_stock_batch_controlled($stock_id){
-    return true;
+    $sql = "SELECT is_batch_controlled FROM ". TB_PREF . "stock_master WHERE stock_id=".db_escape($stock_id);
+    $result = db_fetch_row(db_query($sql, "could not query batch number list"));
+    return ($result[0]==1);
 }

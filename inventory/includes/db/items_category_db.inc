@@ -33,6 +33,7 @@ function add_item_category($description, $tax_type_id, $sales_account,
 		.db_escape($no_purchase).")";
 
 	db_query($sql,"an item category could not be added");
+        return(db_insert_id());
 }
 
 function update_item_category($id, $description, $tax_type_id, 
@@ -99,5 +100,10 @@ function get_category_name($id)
 
 	$row = db_fetch_row($result);
 	return $row[0];
+}
+
+function set_batch_number_id($category_id,$batch_number_id){
+    $sql = "UPDATE ".TB_PREF."stock_category SET batch_number_id=".db_escape($batch_number_id)." WHERE category_id=".db_escape($category_id);
+    db_query($sql);
 }
 
