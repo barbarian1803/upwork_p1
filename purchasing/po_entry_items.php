@@ -13,6 +13,7 @@
 $path_to_root = "..";
 $page_security = 'SA_PURCHASEORDER';
 include_once($path_to_root . "/purchasing/includes/po_class.inc");
+include_once($path_to_root . "/admin/includes/batch_number_class.php");
 include_once($path_to_root . "/includes/session.inc");
 include_once($path_to_root . "/purchasing/includes/purchasing_ui.inc");
 include_once($path_to_root . "/purchasing/includes/db/suppliers_db.inc");
@@ -51,6 +52,7 @@ if (isset($_GET['ModifyOrderNumber']) && is_numeric($_GET['ModifyOrderNumber']))
     $_SESSION['page_title'] = _($help_context = "Direct GRN Entry");
     create_new_po(ST_SUPPRECEIVE, 0);
     copy_from_cart();
+    $_SESSION["batch_holder"] = new BatchNumberHolder();
 } elseif (isset($_GET['NewInvoice'])) {
 
     create_new_po(ST_SUPPINVOICE, 0);
@@ -100,7 +102,7 @@ if (isset($_GET['AddedID'])) {
 
     $trans_no = $_GET['AddedGRN'];
     $trans_type = ST_SUPPRECEIVE;
-
+    
     display_notification_centered(_("Direct GRN has been entered"));
 
     display_note(get_trans_view_str($trans_type, $trans_no, _("&View this GRN")), 0);
@@ -312,7 +314,7 @@ function handle_add_new_item() {
                         0,
                         $_SESSION['PO']->trans_type == ST_SUPPRECEIVE ? $_POST['batch_number']: ''
                     );
-
+                $_SESSION["batch_holder"]->get_batch_obj_by_stock_id($_POST['stock_id'])->increase_no();
                 unset_form_variables();
                 $_POST['stock_id'] = "";
             } else {
@@ -400,6 +402,8 @@ function handle_commit_order() {
         new_doc_date($cart->orig_order_date);
         if ($cart->order_no == 0) { // new po/grn/invoice
             $trans_no = add_direct_supp_trans($cart);
+            $_SESSION["batch_holder"]->save_current_no();
+            return;
             if ($trans_no) {
                 unset($_SESSION['PO']);
                 if ($cart->trans_type == ST_PURCHORDER)
@@ -412,6 +416,7 @@ function handle_commit_order() {
         } else { // order modification
             $order_no = update_po($cart);
             unset($_SESSION['PO']);
+            unset($_SESSION["batch_holder"]);
             meta_forward($_SERVER['PHP_SELF'], "AddedID=$order_no&Updated=1");
         }
     }

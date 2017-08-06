@@ -325,13 +325,17 @@ function display_po_summary(&$po, $is_self = false, $editable = false) {
 
 //--------------------------------------------------------------------------------
 
-function po_item_controls(&$order, &$rowcounter, $line_no = -1) {
+function po_item_controls(&$order, &$rowcounter, $line_no = -1) {   
     global $Ajax, $SysPrefs;
-
+    
     alt_table_row_color($rowcounter);
 
     $dec2 = 0;
     $id = find_submit('Edit');
+    
+    if($order->trans_type == ST_SUPPRECEIVE)
+        $_POST["batch_number"]="";
+    
     if (($id != -1) && $line_no == $id) {
 
         $_POST['stock_id'] = $order->line_items[$id]->stock_id;
@@ -343,7 +347,8 @@ function po_item_controls(&$order, &$rowcounter, $line_no = -1) {
 
         $_POST['units'] = $order->line_items[$id]->units;
         $_POST['item_description'] = $order->line_items[$id]->item_description;
-
+        $_POST['batch_number'] = $order->line_items[$id]->batch_number;
+        
         hidden('stock_id', $_POST['stock_id']);
         label_cell($_POST['stock_id']);
 
@@ -357,7 +362,6 @@ function po_item_controls(&$order, &$rowcounter, $line_no = -1) {
         $Ajax->activate('items_table');
         $qty_rcvd = $order->line_items[$id]->qty_received;
     } else {
-
         // Manufactured item can be purchased
         if ($order->fixed_asset)
             stock_purchasable_fa_list_cells(null, 'stock_id', null, false, true, false, true, $order->line_items);
@@ -370,6 +374,8 @@ function po_item_controls(&$order, &$rowcounter, $line_no = -1) {
             $Ajax->activate('qty');
             $Ajax->activate('req_del_date');
             $Ajax->activate('line_total');
+            if($order->trans_type == ST_SUPPRECEIVE)
+                $Ajax->activate('batch_number');
         }
         $item_info = get_item_edit_info($_POST['stock_id']);
         $_POST['units'] = $item_info["units"];
@@ -379,6 +385,9 @@ function po_item_controls(&$order, &$rowcounter, $line_no = -1) {
         $_POST['price'] = price_decimal_format(get_purchase_price($order->supplier_id, $_POST['stock_id']), $dec2);
         if ($order->trans_type == ST_PURCHORDER)
             $_POST['req_del_date'] = add_days(Today(), $SysPrefs->default_receival_required_by());
+        if($order->trans_type == ST_SUPPRECEIVE){
+            $_POST['batch_number'] = $_SESSION["batch_holder"]->get_batch_obj_by_stock_id($_POST['stock_id'])->get_next_number();
+        }
         $qty_rcvd = '';
     }
 
@@ -403,7 +412,7 @@ function po_item_controls(&$order, &$rowcounter, $line_no = -1) {
     
     amount_cell($line_total, false, '', 'line_total');
     
-    $order->trans_type==ST_SUPPRECEIVE?text_cells("","batch_number"):"";
+    $order->trans_type==ST_SUPPRECEIVE?text_cells("","batch_number",$_POST["batch_number"]):"";
     
     if ($id != -1) {
         button_cell('UpdateLine', _("Update"), _('Confirm changes'), ICON_UPDATE);

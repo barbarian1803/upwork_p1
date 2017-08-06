@@ -133,8 +133,11 @@ function get_on_porder_qty($stock_id, $location)
 	if ($location != "")
 		$sql .= " AND po.into_stock_location=".db_escape($location);
 	$sql .= " AND line.item_code=".db_escape($stock_id);
+        
 	$qoo_result = db_query($sql,"could not receive quantity on order for item");
-
+        
+        
+        
 	if (db_num_rows($qoo_result) == 1)
 	{
 		$qoo_row = db_fetch_row($qoo_result);
@@ -144,11 +147,12 @@ function get_on_porder_qty($stock_id, $location)
 	{
 		$qoo = 0;
 	}
+        
 	return $qoo;
 }
 
 function get_on_worder_qty($stock_id, $location)
-{
+{   
 	$sql = "SELECT SUM((wo.units_reqd-wo.units_issued) * (req.units_req-req.units_issued)) AS qoo
 		FROM ".TB_PREF."wo_requirements req
 			INNER JOIN ".TB_PREF."workorders wo	ON req.workorder_id=wo.id
