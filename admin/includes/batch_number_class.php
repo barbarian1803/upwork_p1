@@ -2,27 +2,69 @@
 
 class BatchNumberHolder{
     var $all_batch_number;
+    var $all_category;
     function __construct() {
-        $sql = "SELECT category_id FROM ".TB_PREF."stock_category";
+        $sql = "SELECT * FROM ".TB_PREF."mod_batch_number_master";
         $result = db_query($sql);
-        while($id = db_fetch_row($result)){
-            $this->all_batch_number["cat_".$id[0]] = new CategoryBatchNumberGenerator($id[0]);
+        while($row = db_fetch_assoc($result)){
+            $this->all_batch_number["id_".$row["id"]] = new BatchNumber($row["id"],$row["string_format"],$row["serial_no"]);
+        }
+        
+        $sql = "SELECT * FROM ".TB_PREF."stock_category";
+        $result = db_query($sql);
+        while($row = db_fetch_assoc($result)){
+            
+            if(array_key_exists("id_".$row["batch_number_id"], $this->all_batch_number))
+                $this->all_category["cat_".$row["category_id"]] = &$this->all_batch_number["id_".$row["batch_number_id"]];
+            else
+                $this->all_category["cat_".$row["category_id"]] = &$this->all_batch_number["id_1"];
+            Debug_FirePHP($row["batch_number_id"]);
+            Debug_FirePHP($this->all_category["cat_".$row["category_id"]]);
         }
     }
     
     function get_batch_obj_by_stock_id($id){
-        global $firephp;
-        $sql = "SELECT category_id FROM ".TB_PREF."stock_master WHERE stock_id=".  db_escape($id);
+        $sql = "SELECT category_id FROM ".TB_PREF."stock_master WHERE stock_id=".db_escape($id);
         $output = db_fetch_row(db_query($sql));
         $category_id = "cat_".$output[0];
-        $firephp->fb($this->all_batch_number);
-        return $this->all_batch_number[$category_id];
+        return $this->all_category[$category_id];
     }
     
     function save_current_no(){
         foreach($this->all_batch_number as $batch_no){
             $batch_no->save_cur_no();
         }
+    }
+}
+
+class BatchNumber{
+    var $cur_number;
+    var $string_number;
+    var $batch_no_id;
+    
+    function __construct($id,$string_number,$cur_number) {
+        $this->batch_no_id = $id;
+        $this->string_number = $string_number;
+        $this->cur_number = $cur_number;
+    }
+    
+    function get_next_number(){
+        $number = $this->string_number;
+        $number = str_replace("%Y", date("Y"), $number);
+        $number = str_replace("%m", date("m"), $number);
+        $number = str_replace("%d", date("d"), $number);
+        $number = str_replace("%no", $this->cur_number, $number);
+        
+        return $number;
+    }
+    
+    function increase_no(){
+        $this->cur_number++;
+    }
+    
+    function save_cur_no(){
+        $sql = "UPDATE ".TB_PREF."mod_batch_number_master SET serial_no=".db_escape($this->cur_number)." WHERE id=".db_escape($this->batch_no_id);
+        db_query($sql);
     }
 }
 

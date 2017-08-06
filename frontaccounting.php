@@ -28,6 +28,11 @@ if (!isset($path_to_root) || isset($_GET['path_to_root']) || isset($_POST['path_
         
         $firephp = FirePHP::getInstance(true);
         
+        function Debug_FirePHP($obj){
+            global $firephp;
+            $firephp->fb($obj);
+        }
+        
 	class front_accounting
 	{
 		var $user;
