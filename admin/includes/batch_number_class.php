@@ -18,16 +18,18 @@ class BatchNumberHolder{
                 $this->all_category["cat_".$row["category_id"]] = &$this->all_batch_number["id_".$row["batch_number_id"]];
             else
                 $this->all_category["cat_".$row["category_id"]] = &$this->all_batch_number["id_1"];
-            Debug_FirePHP($row["batch_number_id"]);
-            Debug_FirePHP($this->all_category["cat_".$row["category_id"]]);
         }
     }
     
     function get_batch_obj_by_stock_id($id){
-        $sql = "SELECT category_id FROM ".TB_PREF."stock_master WHERE stock_id=".db_escape($id);
+        $sql = "SELECT category_id,is_batch_controlled FROM ".TB_PREF."stock_master WHERE stock_id=".db_escape($id);
         $output = db_fetch_row(db_query($sql));
-        $category_id = "cat_".$output[0];
-        return $this->all_category[$category_id];
+        if($output[1]==1){
+            $category_id = "cat_".$output[0];
+            return $this->all_category[$category_id];
+        }else{
+            return $this->all_batch_number["id_1"];
+        }
     }
     
     function save_current_no(){
