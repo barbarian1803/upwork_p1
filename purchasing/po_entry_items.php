@@ -314,7 +314,7 @@ function handle_add_new_item() {
                         0,
                         $_SESSION['PO']->trans_type == ST_SUPPRECEIVE ? $_POST['batch_number']: ''
                     );
-                $_SESSION["batch_holder"]->get_batch_obj_by_stock_id($_POST['stock_id'])->increase_no();
+                $_SESSION['PO']->trans_type == ST_SUPPRECEIVE ?$_SESSION["batch_holder"]->get_batch_obj_by_stock_id($_POST['stock_id'])->increase_no():"";
                 unset_form_variables();
                 $_POST['stock_id'] = "";
             } else {

@@ -13,7 +13,7 @@
 $page_security = 'SA_GRN';
 $path_to_root = "..";
 include_once($path_to_root . "/purchasing/includes/po_class.inc");
-
+include_once($path_to_root . "/admin/includes/batch_number_class.php");
 include_once($path_to_root . "/includes/session.inc");
 include_once($path_to_root . "/purchasing/includes/purchasing_db.inc");
 include_once($path_to_root . "/purchasing/includes/purchasing_ui.inc");
@@ -27,6 +27,8 @@ if (user_use_date_picker())
 page(_($help_context = "Receive Purchase Order Items"), false, false, "", $js);
 
 //---------------------------------------------------------------------------------------------------------------
+$_SESSION["batch_holder"] = new BatchNumberHolder();
+
 
 if (isset($_GET['AddedID'])) {
     $grn = $_GET['AddedID'];
@@ -56,6 +58,9 @@ if ((!isset($_GET['PONumber']) || $_GET['PONumber'] == 0) && !isset($_SESSION['P
 //--------------------------------------------------------------------------------------------------
 
 function display_po_receive_items() {
+    $batch_holder = &$_SESSION["batch_holder"];
+    
+    
     div_start('grn_items');
     start_table(TABLESTYLE, "colspan=7 width='90%'");
     $th = array(_("Item Code"), _("Description"), _("Ordered"), _("Units"), _("Received"),
@@ -97,8 +102,8 @@ function display_po_receive_items() {
             else
                 label_cell(number_format2($ln_itm->receive_qty, $dec), "align=right");
             
-            text_cells("",$ln_itm->stock_id . "batch_number");
-            
+            text_cells("",$ln_itm->stock_id . "batch_number",$batch_holder->get_batch_obj_by_stock_id($ln_itm->stock_id)->get_next_number());
+            $batch_holder->get_batch_obj_by_stock_id($ln_itm->stock_id)->increase_no();
             amount_decimal_cell($ln_itm->price);
             amount_cell($line_total);
             end_row();
