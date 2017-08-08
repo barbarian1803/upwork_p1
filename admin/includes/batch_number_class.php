@@ -65,7 +65,7 @@ class BatchNumber{
     }
     
     function save_cur_no(){
-        if($this->string_number!="none"){
+        if($this->string_number!="None"){
             $sql = "UPDATE ".TB_PREF."mod_batch_number_master SET serial_no=".db_escape($this->cur_number)." WHERE id=".db_escape($this->batch_no_id);
             db_query($sql);
         }

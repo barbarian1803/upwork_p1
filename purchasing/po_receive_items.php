@@ -27,8 +27,6 @@ if (user_use_date_picker())
 page(_($help_context = "Receive Purchase Order Items"), false, false, "", $js);
 
 //---------------------------------------------------------------------------------------------------------------
-$_SESSION["batch_holder"] = new BatchNumberHolder();
-
 
 if (isset($_GET['AddedID'])) {
     $grn = $_GET['AddedID'];
@@ -58,6 +56,7 @@ if ((!isset($_GET['PONumber']) || $_GET['PONumber'] == 0) && !isset($_SESSION['P
 //--------------------------------------------------------------------------------------------------
 
 function display_po_receive_items() {
+    $_SESSION["batch_holder"] = new BatchNumberHolder();
     $batch_holder = &$_SESSION["batch_holder"];
     
     
@@ -102,12 +101,14 @@ function display_po_receive_items() {
             else
                 label_cell(number_format2($ln_itm->receive_qty, $dec), "align=right");
             
-            text_cells("",$ln_itm->stock_id . "batch_number",$batch_holder->get_batch_obj_by_stock_id($ln_itm->stock_id)->get_next_number());
-            $batch_holder->get_batch_obj_by_stock_id($ln_itm->stock_id)->increase_no();
+            $batch_number = $batch_holder->get_batch_obj_by_stock_id($ln_itm->stock_id);
+            text_cells("",$ln_itm->stock_id . "batch_number",$batch_number->get_next_number());
+            $batch_number->increase_no();
             amount_decimal_cell($ln_itm->price);
             amount_cell($line_total);
             end_row();
         }
+        Debug_FirePHP($batch_holder);
     }
 
     $colspan = count($th) - 1;
@@ -238,6 +239,7 @@ function process_receive_po() {
         unset($_SESSION['PO']->line_items);
         unset($_SESSION['PO']);
         unset($_POST['ProcessGoodsReceived']);
+        unset($_SESSION['batch_holder']);
         $Ajax->activate('_page_body');
         display_footer_exit();
     }
@@ -253,7 +255,10 @@ function process_receive_po() {
     new_doc_date($_POST['DefaultReceivedDate']);
     unset($_SESSION['PO']->line_items);
     unset($_SESSION['PO']);
-
+    Debug_FirePHP($_SESSION['batch_holder']);
+    $_SESSION['batch_holder']->save_current_no();
+    
+    unset($_SESSION['batch_holder']);
     meta_forward($_SERVER['PHP_SELF'], "AddedID=$grn_no");
 }
 
