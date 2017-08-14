@@ -52,8 +52,6 @@ class setup_app extends application
 			"admin/crm_categories.php?", 'SA_CRMCATEGORY', MENU_MAINTENANCE);
 		$this->add_rapp_function(1, _("Bat&ch number setup"),
 				"admin/mod_batch_number_setup.php?", 'SA_SETUPCOMPANY', MENU_MAINTENANCE);
-		$this->add_rapp_function(1, _("Assi&gn bat&ch number"),
-				"admin/mod_batch_number_assign.php?", 'SA_SETUPCOMPANY', MENU_MAINTENANCE);
 
 		$this->add_module(_("Maintenance"));
 		$this->add_lapp_function(2, _("&Void a Transaction"),
