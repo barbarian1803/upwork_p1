@@ -228,7 +228,7 @@ function get_items_search($description, $type)
 }
 
 function set_batch_controlled($stock_id,$is_controlled){
-    $sql = "UPDATE ".TB_PREF."stock_master SET is_batch_controlled=".db_escape($is_controlled).
+    $sql = "UPDATE ".TB_PREF."stock_master SET Z_is_batch_controlled=".db_escape($is_controlled).
             " WHERE stock_id=".db_escape($stock_id);
     db_query($sql);
 }

@@ -126,7 +126,7 @@ while ($myrow = db_fetch($result)) {
     if (!$fixed_asset)
         label_cell($myrow["dflt_wip_act"], "align=center");
     inactive_control_cell($myrow["category_id"], $myrow["inactive"], 'stock_category', 'category_id');
-    label_cell(get_batch($myrow["batch_number_id"])[1], "align=center");
+    label_cell(get_batch($myrow["Z_batch_number_id"])[1], "align=center");
     edit_button_cell("Edit" . $myrow["category_id"], _("Edit"));
     delete_button_cell("Delete" . $myrow["category_id"], _("Delete"));
     end_row();

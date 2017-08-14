@@ -3,7 +3,7 @@
 include_once($path_to_root."/includes/ui/ui_lists.inc");
 
 function batch_number_master_list($name, $selected_id=null,$submit_on_change=false){
-  $sql = "SELECT id,string_format FROM ".TB_PREF."mod_batch_number_master";
+  $sql = "SELECT id,string_format FROM Z_batch_number_master";
 
 	// default to the company currency
 	return combo_input($name, $selected_id, $sql, 'id', 'string_format',

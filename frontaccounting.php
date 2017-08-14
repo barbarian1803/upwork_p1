@@ -67,7 +67,6 @@ if (!isset($path_to_root) || isset($_GET['path_to_root']) || isset($_POST['path_
 		function display()
 		{
 			global $path_to_root;
-			
 			include_once($path_to_root . "/themes/".user_theme()."/renderer.php");
 
 			$this->init();
@@ -96,7 +95,7 @@ if (!isset($path_to_root) || isset($_GET['path_to_root']) || isset($_POST['path_
 			    $this->add_application(new assets_app());
 			$this->add_application(new dimensions_app());
 			$this->add_application(new general_ledger_app());
-
+                        
 			hook_invoke_all('install_tabs', $this);
 
 			$this->add_application(new setup_app());

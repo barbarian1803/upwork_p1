@@ -1,4 +1,4 @@
-CREATE TABLE `0_mod_inspection_plan_header` (
+CREATE TABLE `Z_inspection_plan_header` (
   `id` int(11) NOT NULL,
   `description` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `task_list_type` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
@@ -8,14 +8,14 @@ CREATE TABLE `0_mod_inspection_plan_header` (
   `modified_date` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `0_mod_inspection_plan_header`
+ALTER TABLE `Z_inspection_plan_header`
   ADD PRIMARY KEY (`id`);
 
-ALTER TABLE `0_mod_inspection_plan_header`
+ALTER TABLE `Z_inspection_plan_header`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;COMMIT;
 
 
-CREATE TABLE `0_mod_inspection_plan_content` (
+CREATE TABLE `Z_inspection_plan_content` (
   `id` int(11) NOT NULL,
   `inspection_plan_id` int(11) NOT NULL,
   `question` int(11) NOT NULL,
@@ -24,8 +24,8 @@ CREATE TABLE `0_mod_inspection_plan_content` (
   `option_list` text COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-ALTER TABLE `0_mod_inspection_plan_content`
+ALTER TABLE `Z_inspection_plan_content`
   ADD PRIMARY KEY (`id`);
 
-ALTER TABLE `0_mod_inspection_plan_content`
+ALTER TABLE `Z_inspection_plan_content`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;COMMIT;
