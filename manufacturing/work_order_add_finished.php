@@ -11,8 +11,12 @@
 ***********************************************************************/
 $page_security = 'SA_MANUFRECEIVE';
 $path_to_root = "..";
+include_once($path_to_root . "/admin/includes/batch_number_class.php");
+
 include_once($path_to_root . "/includes/session.inc");
 include_once($path_to_root . "/includes/inventory.inc");
+
+include_once($path_to_root . "/admin/db/mod_batch_number_db.php");
 
 include_once($path_to_root . "/includes/date_functions.inc");
 include_once($path_to_root . "/gl/includes/db/gl_db_bank_trans.inc");
@@ -160,8 +164,9 @@ if ((isset($_POST['Process']) || isset($_POST['ProcessAndClose'])) && can_proces
 		$_POST['quantity'] = -$_POST['quantity'];
 
 	 $id = work_order_produce($_POST['selected_id'], $_POST['ref'], input_num('quantity'),
-			$_POST['date_'], $_POST['memo_'], $close_wo);
-
+			$_POST['date_'], $_POST['memo_'], $close_wo,$_POST["batch_number"]);
+        $_SESSION["batch_holder"]->save_current_no();
+        unset($_SESSION["batch_holder"]);
 	meta_forward($_SERVER['PHP_SELF'], "AddedID=".$_POST['selected_id']."&date=".$_POST['date_']);
 }
 
@@ -176,6 +181,11 @@ start_form();
 hidden('selected_id', $_POST['selected_id']);
 
 $dec = get_qty_dec($wo_details["stock_id"]);
+unset($_SESSION["batch_holder"]);
+$_SESSION["batch_holder"] = new BatchNumberHolder();
+$batch_holder = &$_SESSION["batch_holder"];
+$batch_number = $batch_holder->get_batch_obj_by_stock_id($wo_details["stock_id"]);
+
 if (!isset($_POST['quantity']) || $_POST['quantity'] == '')
 	$_POST['quantity'] = qty_format(max($wo_details["units_reqd"] - $wo_details["units_issued"], 0), $wo_details["stock_id"], $dec);
 
@@ -192,7 +202,7 @@ yesno_list_row(_("Type:"), 'ProductionType', $_POST['ProductionType'],
 	_("Produce Finished Items"), _("Return Items to Work Order"));
 
 small_qty_row(_("Quantity:"), 'quantity', null, null, null, $dec);
-
+text_row(_("Batch number"), "batch_number", $batch_number->get_next_number(),15,255);
 textarea_row(_("Memo:"), 'memo_', null, 40, 3);
 
 end_table(1);

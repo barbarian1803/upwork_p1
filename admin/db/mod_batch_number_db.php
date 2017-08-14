@@ -49,6 +49,11 @@ function add_batch_number_in_stock_moves($cart, $id) {
     db_query($sql, "could not query batch number list");
 }
 
+function set_batch_number_in_stock_moves($batch_number, $id) {
+    $sql = "UPDATE " . TB_PREF . "stock_moves SET Z_batch_number=" . db_escape($batch_number) . " WHERE trans_id=" . db_escape($id);
+    db_query($sql, "could not query batch number list");
+}
+
 function is_stock_batch_controlled($stock_id){
     $sql = "SELECT Z_is_batch_controlled FROM ". TB_PREF . "stock_master WHERE stock_id=".db_escape($stock_id);
     $result = db_fetch_row(db_query($sql, "could not query batch number list"));

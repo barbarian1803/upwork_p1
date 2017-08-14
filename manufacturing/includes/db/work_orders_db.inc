@@ -13,12 +13,13 @@
 	Common entry procedure for all work order types
 */
 function add_work_order($wo_ref, $loc_code, $units_reqd, $stock_id,
-	$type, $date_, $required_by, $memo_, $costs, $cr_acc, $labour, $cr_lab_acc)
+	$type, $date_, $required_by, $memo_, $costs, $cr_acc, $labour, $cr_lab_acc,$batch_number)
 {
 	global $Refs;
 
 	begin_transaction();
 	$args = func_get_args();
+        array_pop($args);
 	$args = (object)array_combine(array('wo_ref', 'loc_code', 'units_reqd', 'stock_id',
 		'type', 'date_', 'required_by', 'memo_', 'costs', 'cr_acc', 'labour', 'cr_lab_acc'), $args);
 
@@ -61,7 +62,9 @@ function add_work_order($wo_ref, $loc_code, $units_reqd, $stock_id,
 			$units_reqd = -$units_reqd;
 
 		$ref = $Refs->get_next(ST_MANURECEIVE, null, $date_);
-		work_order_produce($woid, $ref, $units_reqd, $date_, '', true);
+                
+                //TO DO: if the type of manufacture is not advance manufactur, batch number should be set from the form
+		work_order_produce($woid, $ref, $units_reqd, $date_, '', true,$batch_number);
 	}
 
 	commit_transaction();

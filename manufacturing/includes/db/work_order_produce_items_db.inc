@@ -9,7 +9,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
     See the License here <http://www.gnu.org/licenses/gpl-3.0.html>.
 ***********************************************************************/
-function work_order_produce($woid, $ref, $quantity, $date_, $memo, $close_wo)
+function work_order_produce($woid, $ref, $quantity, $date_, $memo, $close_wo,$batch_number)
 {
 	global $Refs;
 
@@ -17,6 +17,7 @@ function work_order_produce($woid, $ref, $quantity, $date_, $memo, $close_wo)
 	begin_transaction();
 
 	$args = func_get_args();
+        array_pop($args);
 	$args = (object)array_combine(array('woid', 'ref', 'quantity', 'date_', 'memo','close_wo'),
 		$args);
 	$args->trans_no = 0;
@@ -81,8 +82,10 @@ function work_order_produce($woid, $ref, $quantity, $date_, $memo, $close_wo)
 
 		$unit_cost = $total_cost/($product['units_issued']+$quantity);
 
-		add_stock_move(ST_WORKORDER, $product["stock_id"], $woid,
+		$id_stock_moves = add_stock_move(ST_WORKORDER, $product["stock_id"], $woid,
 			$product["loc_code"], $date_, $ref, $product['units_issued']+$quantity, $unit_cost);
+                
+                set_batch_number_in_stock_moves($batch_number,$id_stock_moves);
 
 		update_material_cost($product['stock_id'], $product['units_issued']+$quantity, $unit_cost, $date_);
 	}
