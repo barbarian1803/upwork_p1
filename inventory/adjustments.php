@@ -22,6 +22,7 @@ include_once($path_to_root . "/fixed_assets/includes/fixed_assets_db.inc");
 include_once($path_to_root . "/inventory/includes/item_adjustments_ui.inc");
 include_once($path_to_root . "/inventory/includes/inventory_db.inc");
 $js = "";
+
 if ($SysPrefs->use_popup_windows)
 	$js .= get_js_open_window(800, 500);
 if (user_use_date_picker())
@@ -37,7 +38,6 @@ if (isset($_GET['NewAdjustment'])) {
 page($_SESSION['page_title'], false, false, "", $js);
 
 //-----------------------------------------------------------------------------------------------
-
 if (isset($_GET['AddedID'])) 
 {
 	$trans_no = $_GET['AddedID'];

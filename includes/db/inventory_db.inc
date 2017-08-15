@@ -513,3 +513,25 @@ function get_mb_flag($stock_id)
 	return $myrow[0];
 }
 
+function get_qoh_on_date_per_batch($stock_id, $location=null, $date_=null)
+{
+    if ($date_ == null)
+        $date_ = Today();
+
+     $date = date2sql($date_);
+     $sql = "SELECT Z_batch_number, SUM(qty) total_per_batch
+     	FROM ".TB_PREF."stock_moves st
+   		LEFT JOIN ".TB_PREF."voided v ON st.type=v.type AND st.trans_no=v.id
+          WHERE ISNULL(v.id)
+          AND stock_id=".db_escape($stock_id)."
+          AND tran_date <= '$date'"; 
+
+    if ($location != null)
+        $sql .= " AND loc_code = ".db_escape($location);
+    
+    $sql.= " GROUP BY Z_batch_number";
+    $result = db_query($sql, "QOH calculation failed");
+    
+    return $result;
+    
+}
