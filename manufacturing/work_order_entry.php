@@ -27,10 +27,13 @@ if ($SysPrefs->use_popup_windows)
 if (user_use_date_picker())
     $js .= get_js_date_picker();
 
-unset($_SESSION["batch_holder"]);
-$_SESSION["batch_holder"] = new BatchNumberHolder();
-$batch_holder = &$_SESSION["batch_holder"];
 page(_($help_context = "Work Order Entry"), false, false, "", $js);
+
+
+if(!isset($_POST['ADD_ITEM'])){
+    $_SESSION["batch_holder"] = new BatchNumberHolder();
+}
+$batch_holder = &$_SESSION["batch_holder"];
 
 
 check_db_has_manufacturable_items(_("There are no manufacturable items defined in the system."));
@@ -216,11 +219,10 @@ if (isset($_POST['ADD_ITEM']) && can_process()) {
     if (!isset($_POST['cr_lab_acc']))
         $_POST['cr_lab_acc'] = "";
     $id = add_work_order($_POST['wo_ref'], $_POST['StockLocation'], input_num('quantity'), $_POST['stock_id'], $_POST['type'], $_POST['date_'], $_POST['RequDate'], $_POST['memo_'], input_num('Costs'), $_POST['cr_acc'], input_num('Labour'), $_POST['cr_lab_acc'],$_POST["batch_number"]);
-    Debug_FirePHP($_SESSION["batch_holder"]);
     $_SESSION["batch_holder"]->save_current_no();
     unset($_SESSION["batch_holder"]);
     new_doc_date($_POST['date_']);
-    //meta_forward($_SERVER['PHP_SELF'], "AddedID=$id&type=" . $_POST['type'] . "&date=" . $_POST['date_']);
+    meta_forward($_SERVER['PHP_SELF'], "AddedID=$id&type=" . $_POST['type'] . "&date=" . $_POST['date_']);
 }
 
 //-------------------------------------------------------------------------------------
@@ -332,8 +334,9 @@ if (get_post('released')) {
     label_row(_("Destination Location:"), $myrow["location_name"]);
 } else {
     stock_manufactured_items_list_row(_("Item:"), 'stock_id', null, false, true);
-    if (list_updated('stock_id'))
+    if (list_updated('stock_id')){
         $Ajax->activate('quantity');
+    }
 
     locations_list_row(_("Destination Location:"), 'StockLocation', null);
 }
@@ -350,13 +353,14 @@ if (get_post('type') == WO_ADVANCED) {
         label_row(_("Quantity Manufactured:"), number_format($_POST['units_issued'], get_qty_dec($_POST['stock_id'])));
     date_row(_("Date") . ":", 'date_', '', true);
     date_row(_("Date Required By") . ":", 'RequDate', '', null, $SysPrefs->default_wo_required_by());
+    hidden('batch_number', '');
 }
 else {
     qty_row(_("Quantity:"), 'quantity', null, null, null, $dec);
-    $batch_number = $batch_holder->get_batch_obj_by_stock_id($_POST["stock_id"]);
     //TO DO: if the type of manufacture is not advance manufactur, batch number should be set from the form
-    Debug_FirePHP($_SESSION["batch_holder"]);
+    $batch_number = $batch_holder->get_batch_obj_by_stock_id($_POST['stock_id']);
     text_row(_("Batch number"), "batch_number", $batch_number->get_next_number(), 15, 255);
+    $batch_number->increase_no();
     date_row(_("Date") . ":", 'date_', '', true);
     hidden('RequDate', '');
 
