@@ -155,10 +155,10 @@ function adjustment_edit_item_controls(&$order, $line_no = -1) {
     if ($order->fixed_asset) {
         hidden('qty', -1);
         qty_cell(1, false, 0);
-    } else
-        $strBatchOpen = "<a href='#' id='batch_selector' onclick='return openWindow(\"".$path_to_root."/inventory/adjustment_batch_selector.php\")'>"._("Batch")."</a>";
-        qty_cells(null, 'qty', $_POST['qty'], null, $strBatchOpen, $dec);
-
+    } else {
+        $link_popup = viewer_link("Batch", 'inventory/adjustment_batch_selector.php?stock_id=' . $_POST['stock_id']);
+        qty_cells(null, 'qty', $_POST['qty'], null, $link_popup, $dec);
+    }
     label_cell($_POST['units'], '', 'units');
 
     if ($order->fixed_asset) {
