@@ -9,6 +9,10 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
     See the License here <http://www.gnu.org/licenses/gpl-3.0.html>.
 ***********************************************************************/
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+
 if (!isset($path_to_root) || isset($_GET['path_to_root']) || isset($_POST['path_to_root']))
 	die("Restricted access");
 	include_once($path_to_root . '/applications/application.php');
@@ -24,7 +28,8 @@ if (!isset($path_to_root) || isset($_GET['path_to_root']) || isset($_POST['path_
 
         include_once($path_to_root . '/FirePHPCore/FirePHP.class.php');
         include_once($path_to_root . '/FirePHPCore/fb.php');
-
+        include_once($path_to_root . '/FirePHPCore/ChromePhp.php');
+        
         
         $firephp = FirePHP::getInstance(true);
         
@@ -33,7 +38,10 @@ if (!isset($path_to_root) || isset($_GET['path_to_root']) || isset($_POST['path_
             $firephp->fb($obj);
         }
         
-	class front_accounting
+        function ConsoleDebug($obj){
+            ChromePhp::log($obj);
+        }
+        class front_accounting
 	{
 		var $user;
 		var $settings;

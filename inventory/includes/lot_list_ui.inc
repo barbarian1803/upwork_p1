@@ -1,19 +1,22 @@
 <?php
 function js_get_data_in_parent($parent,$target){
-    echo "
-    <script type='text/javascript'>
-
-    var oDom = opener.document;
-    var elem = oDom.getElementsByName('".$parent."')[0];
-    if (elem) {
-        var val = elem.value;
-        if(val==''){
-            val = 0;
+    $ret = "
+        function get_data_in_parent(parent,target){
+            var oDom = opener.document;
+            var elem = oDom.getElementsByName(parent)[0];
+            if (elem) {
+                var val = elem.value;
+                if(val==''){
+                    val = 0;
+                }
+                document.getElementsByName(target)[0].value = val;
+            }
         }
-        document.getElementById('".$target."').innerHTML = 'Number adjusted: '+val;
-    }   
-    </script>
-";
+        get_data_in_parent('".$parent."','".$target."');
+        ";
+    
+    return $ret;
+    
 }
 
 function js_submit_data_in_parent($parent){
@@ -36,12 +39,10 @@ function close_window(){
 }
 
 function show_quantity($target){
-    echo "
-    <script type='text/javascript'>
+    return "
         qty = document.getElementsByName('".$target."')[0].value;
-        document.getElementById('parent_qty_entered_view').innerHTML=qty;   
-    </script>
-";
+        document.getElementById('amount').innerHTML= 'Entered value: '+qty;
+    ";
 }
 
 function process_lot_to_parent($data){
