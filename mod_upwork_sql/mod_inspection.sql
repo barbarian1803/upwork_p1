@@ -29,3 +29,16 @@ ALTER TABLE `Z_inspection_plan_content`
 
 ALTER TABLE `Z_inspection_plan_content`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;COMMIT;
+
+
+CREATE TABLE `Z_inspection_plan_content_option` (
+  `id` int(11) NOT NULL,
+  `content_id` int(11) NOT NULL,
+  `option_text` varchar(255) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `Z_inspection_plan_content_option`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `Z_inspection_plan_content_option`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;COMMIT;

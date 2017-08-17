@@ -421,6 +421,7 @@ $opts = array(		// default options
 	$selector = $first_opt = '';
 	$first_id = false;
 	$found = false;
+        ConsoleDebug($items);
 	foreach($items as $value=>$descr) {
 		$sel = '';
 		if (in_array((string)$value, $selected_id, true)) {
