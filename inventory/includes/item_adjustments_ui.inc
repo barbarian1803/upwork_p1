@@ -26,11 +26,12 @@ function add_to_order(&$order, $new_item, $new_item_qty, $standard_cost) {
 
 function display_order_header(&$order) {
     global $Refs;
-
+    global $Ajax;
+    
     start_outer_table(TABLESTYLE2, "width='70%'"); // outer table
     table_section(1);
 
-    locations_list_row(_("Location:"), 'StockLocation', null, false, false, $order->fixed_asset);
+    locations_list_row(_("Location:"), 'StockLocation', null, false, true, $order->fixed_asset);
     date_row(_("Date:"), 'AdjDate', '', true);
 
     table_section(2, "50%");
@@ -38,6 +39,10 @@ function display_order_header(&$order) {
     ref_row(_("Reference:"), 'ref', '', $Refs->get_next(ST_INVADJUST, null, array('location' => get_post('StockLocation'), 'date' => get_post('AdjDate'))), false, ST_INVADJUST);
 
     end_outer_table(1); // outer table
+    
+    if (list_updated('StockLocation')) {
+        $Ajax->activate('items_table');
+    }
 }
 
 //---------------------------------------------------------------------------------
@@ -156,7 +161,7 @@ function adjustment_edit_item_controls(&$order, $line_no = -1) {
         hidden('qty', -1);
         qty_cell(1, false, 0);
     } else {
-        $link_popup = viewer_link("Batch", 'inventory/batch_selector.php?stock_id=' . $_POST['stock_id']);
+        $link_popup = viewer_link("Batch", 'inventory/adjustment_batch_selector.php?stock_id=' . $_POST['stock_id'] . '&location='.$_POST['StockLocation']);
         qty_cells(null, 'qty', $_POST['qty'], null, $link_popup, $dec);
     }
     label_cell($_POST['units'], '', 'units');

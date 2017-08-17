@@ -31,18 +31,23 @@ include_once($path_to_root . "/includes/db/manufacturing_db.inc");
 print_stock_check();
 
 function getTransactions($category, $location, $item_like) {
-    $sql = "SELECT item.category_id,
-			category.description AS cat_description,
-			item.stock_id, item.units,
-			item.description, item.inactive,
-			IF(move.stock_id IS NULL, '', move.loc_code) AS loc_code,
-			SUM(IF(move.stock_id IS NULL,0,move.qty)) AS QtyOnHand
-		FROM ("
-            . TB_PREF . "stock_master item,"
-            . TB_PREF . "stock_category category)
-			LEFT JOIN " . TB_PREF . "stock_moves move ON item.stock_id=move.stock_id
-		WHERE item.category_id=category.category_id
+    $sql = "SELECT 
+                item.category_id,
+                category.description AS cat_description,
+                item.stock_id, 
+                item.units,
+                item.description, 
+                item.inactive,
+                SUM(IF(move.stock_id IS NULL,0,move.qty)) AS QtyOnHand,
+                move.Z_batch_number as batch
+		
+            FROM 
+                (". TB_PREF . "stock_master item,". TB_PREF . "stock_category category)
+                LEFT JOIN (" . TB_PREF . "stock_moves move) ON item.stock_id=move.stock_id
+            WHERE 
+                item.category_id=category.category_id
 		AND (item.mb_flag='B' OR item.mb_flag='M')";
+    
     if ($category != 0)
         $sql .= " AND item.category_id = " . db_escape($category);
     if ($location != 'all')
@@ -58,8 +63,9 @@ function getTransactions($category, $location, $item_like) {
     $sql .= " GROUP BY item.category_id,
 		category.description,
 		item.stock_id,
-		item.description
-		ORDER BY item.category_id,
+		item.description,
+                move.Z_batch_number
+                ORDER BY item.category_id,
 		item.stock_id";
 
     return db_query($sql, "No transactions were returned");
@@ -112,13 +118,13 @@ function print_stock_check() {
     else
         $nozeros = _('No');
     if ($check) {
-        $cols = array(0, 75, 225, 250, 295, 345, 390, 445, 515);
-        $headers = array(_('Stock ID'), _('Description'), _('UOM'), _('Quantity'), _('Check'), _('Demand'), $available, _('On Order'));
-        $aligns = array('left', 'left', 'left', 'right', 'right', 'right', 'right', 'right');
+        $cols = array(0, 60, 160, 210, 275, 310, 350, 430, 490, 550);
+        $headers = array(_('Stock ID'), _('Description'),_('Batch number'), _('UOM'), _('Quantity'), _('Check'), _('Demand'), $available, _('On Order'));
+        $aligns = array('left', 'left', 'left', 'left', 'right', 'right', 'right', 'right', 'right');
     } else {
-        $cols = array(0, 75, 225, 250, 315, 380, 445, 515);
-        $headers = array(_('Stock ID'), _('Description'), _('UOM'), _('Quantity'), _('Demand'), $available, _('On Order'));
-        $aligns = array('left', 'left', 'left', 'right', 'right', 'right', 'right');
+        $cols = array(0, 60, 160, 275, 310, 350, 430, 490, 550);
+        $headers = array(_('Stock ID'), _('Description'),_('Batch number'), _('UOM'), _('Quantity'), _('Demand'), $available, _('On Order'));
+        $aligns = array('left', 'left', 'left', 'left', 'right', 'right', 'right', 'right');
     }
 
 
@@ -128,7 +134,7 @@ function print_stock_check() {
         3 => array('text' => _('Only Shortage'), 'from' => $short, 'to' => ''),
         4 => array('text' => _('Suppress Zeros'), 'from' => $nozeros, 'to' => ''));
 
-    $rep = new FrontReport(_('Stock Check Sheets'), "StockCheckSheet", user_pagesize(), 9, $orientation);
+    $rep = new FrontReport(_('Stock Batch Check Sheets'), "StockBatchCheckSheet", user_pagesize(), 9, $orientation);
     if ($orientation == 'L')
         recalculate_cols($cols);
 
@@ -137,7 +143,9 @@ function print_stock_check() {
     $rep->NewPage();
 
     $res = getTransactions($category, $location, $like);
+    
     $catt = '';
+    
     while ($trans = db_fetch($res)) {
         if ($location == 'all')
             $loc_code = "";
@@ -167,17 +175,18 @@ function print_stock_check() {
         $dec = get_qty_dec($trans['stock_id']);
         $rep->TextCol(0, 1, $trans['stock_id']);
         $rep->TextCol(1, 2, $trans['description'] . ($trans['inactive'] == 1 ? " (" . _("Inactive") . ")" : ""), -1);
-        $rep->TextCol(2, 3, $trans['units']);
-        $rep->AmountCol(3, 4, $trans['QtyOnHand'], $dec);
+        $rep->TextCol(2, 3, $trans['batch']);
+        $rep->TextCol(3, 4, $trans['units']);
+        $rep->AmountCol(4, 5, $trans['QtyOnHand'], $dec);
         if ($check) {
-            $rep->TextCol(4, 5, "_________");
+            $rep->TextCol(5, 6, "       ______________");
+            $rep->AmountCol(6, 7, $demandqty, $dec);
+            $rep->AmountCol(7, 8, $trans['QtyOnHand'] - $demandqty, $dec);
+            $rep->AmountCol(8, 9, $onorder, $dec);
+        } else {
             $rep->AmountCol(5, 6, $demandqty, $dec);
             $rep->AmountCol(6, 7, $trans['QtyOnHand'] - $demandqty, $dec);
             $rep->AmountCol(7, 8, $onorder, $dec);
-        } else {
-            $rep->AmountCol(4, 5, $demandqty, $dec);
-            $rep->AmountCol(5, 6, $trans['QtyOnHand'] - $demandqty, $dec);
-            $rep->AmountCol(6, 7, $onorder, $dec);
         }
         if ($pictures) {
             $image = company_path() . '/images/'
@@ -192,6 +201,8 @@ function print_stock_check() {
             }
         }
     }
+    
+    
     $rep->Line($rep->row - 4);
     $rep->NewLine();
     

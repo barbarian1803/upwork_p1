@@ -21,6 +21,13 @@ if(isset($_GET["stock_id"]))
     $stock_id = $_GET["stock_id"];
 else
     $stock_id = $_POST["stock_id"];
+
+if(isset($_GET["location"]))
+    $location = $_GET["location"];
+else
+    $location = $_POST["location"];
+
+
 $stock = get_item($stock_id);
 
 
@@ -40,7 +47,10 @@ if (isset($_GET['NewAdjustment'])) {
 }
 
 $js .= js_get_data_in_parent("qty","parent_value");
+$js .= js_get_data_in_parent("StockLocation","location");
+
 $js .= show_quantity("parent_value");
+$js .= show_location("Location","location","Location");
 
 function process_batch_selector(){
     $stock_id = $_POST["stock_id"];
@@ -84,14 +94,15 @@ page($_SESSION['page_title'], true, false, "", $js);
 echo "<center><h3>Item adjustment per batch</h3></center>";
 echo "<center>";
 echo "<span>Item: ".$stock["description"]."</span>&nbsp&nbsp&nbsp";
-echo "<span id='amount'></span>";
+echo "<span id='amount'></span>&nbsp&nbsp&nbsp";
+echo "<span id='Location'></span><br/>";
 echo "</center>";
 
 start_form();
 start_table(TABLESTYLE2);
 $th = array(_("Batch number"), _("Quantity On Hand"),_("Adjusted quantity"));
 table_header($th);
-$result = get_qoh_on_date_per_batch($stock_id);
+$result = get_qoh_on_date_per_batch($stock_id,$location);
 $total = 0;
 $count = 0;
 while($myrow = db_fetch_assoc($result)){
@@ -116,6 +127,7 @@ end_row();
 end_table();
 hidden("parent_value");
 hidden("stock_id",$stock_id);
+hidden("location",$location);
 submit_center_first("save", "Save");
 end_form();
 end_page();
