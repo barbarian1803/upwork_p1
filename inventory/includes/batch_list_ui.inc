@@ -45,6 +45,13 @@ function show_quantity($target){
     ";
 }
 
+function show_location($output,$target,$text){
+    return "
+        val = document.getElementsByName('".$target."')[0].value;
+        document.getElementById('".$output."').innerHTML= '".$text.": '+val;
+    ";
+}
+
 function process_lot_to_parent($data){
     echo "
     <script type='text/javascript'>

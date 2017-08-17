@@ -11,12 +11,13 @@
 ***********************************************************************/
 //-------------------------------------------------------------------------------------------------------------
 
-function add_stock_transfer($Items, $location_from, $location_to, $date_, $reference, $memo_)
+function add_stock_transfer($Items, $location_from, $location_to, $date_, $reference, $memo_,$batch)
 {
 	global $SysPrefs, $path_to_root, $Refs;
 
 	begin_transaction();
 	$args = func_get_args();
+        array_pop($args);
 	$args = (object)array_combine(array('Items', 'location_from', 'location_to', 
 	'date_', 'reference', 'memo_'), $args);
 	$args->trans_no = 0;
@@ -37,7 +38,7 @@ function add_stock_transfer($Items, $location_from, $location_to, $date_, $refer
 		if ($SysPrefs->loc_notification() == 1)
 			$loc = calculate_reorder_level($location_from, $line_item, $st_ids, $st_names, $st_num, $st_reorder); 
 		add_stock_transfer_item($transfer_id, $line_item->stock_id, $location_from,
-			$location_to, $date_, $reference, $line_item->quantity);
+			$location_to, $date_, $reference, $line_item->quantity,$batch[$line_item->stock_id]["entered_qty"],$batch[$line_item->stock_id]["batch_number"]);
 	}
 
 	add_comments(ST_LOCTRANSFER, $transfer_id, $date_, $memo_);
@@ -64,13 +65,23 @@ function add_stock_transfer($Items, $location_from, $location_to, $date_, $refer
 // it seems the standard_cost field is not used at all
 
 function add_stock_transfer_item($transfer_id, $stock_id, $location_from, $location_to,
-	$date_, $reference, $quantity)
+	$date_, $reference, $quantity,$batch_qty,$batch_number)
 {
-	add_stock_move(ST_LOCTRANSFER, $stock_id, $transfer_id, $location_from,
-       	$date_, $reference, -$quantity, 0);
-
-	add_stock_move(ST_LOCTRANSFER, $stock_id, $transfer_id, $location_to,
-	   	$date_, $reference, $quantity, 0);
+        
+        for($i=0;$i<count($batch_qty);$i++){
+            
+            if($batch_qty[$i]==0){
+                continue;
+            }
+            
+            $min_id = add_stock_move(ST_LOCTRANSFER, $stock_id, $transfer_id, $location_from,
+                $date_, $reference, -$batch_qty[$i], 0);
+            set_batch_number_in_stock_moves($batch_number[$i], $min_id);
+	
+            $plus_id = add_stock_move(ST_LOCTRANSFER, $stock_id, $transfer_id, $location_to,
+	   	$date_, $reference, $batch_qty[$i], 0);
+            set_batch_number_in_stock_moves($batch_number[$i], $plus_id);
+        }
 
 }
 

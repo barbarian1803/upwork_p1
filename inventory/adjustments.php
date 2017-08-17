@@ -22,7 +22,7 @@ include_once($path_to_root . "/includes/data_checks.inc");
 include_once($path_to_root . "/fixed_assets/includes/fixed_assets_db.inc");
 include_once($path_to_root . "/inventory/includes/item_adjustments_ui.inc");
 include_once($path_to_root . "/inventory/includes/inventory_db.inc");
-include_once($path_to_root . "/inventory/includes/lot_list_ui.inc");
+include_once($path_to_root . "/inventory/includes/batch_list_ui.inc");
 include_once($path_to_root . "/admin/db/mod_batch_number_db.php");
 $js = "";
 
