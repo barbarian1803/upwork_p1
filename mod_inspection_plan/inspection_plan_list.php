@@ -29,7 +29,7 @@ if (user_use_date_picker())
 
 page(_("Inspection plan list"), false, false, "", $js);
 
-echo "<center><a href='".$path_to_root."/mod_inspection_plan/create_inspection_plan.php'>Create inspection list</a></center><br/>";
+echo "<center><a href='".$path_to_root."/mod_inspection_plan/create_inspection_plan.php?NewPlan=Yes'>Create inspection list</a></center><br/>";
 
 //-----------------------------------------------------------------------------------------------
 start_table(TABLESTYLE, "width='70%'", 2);
