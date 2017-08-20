@@ -6,14 +6,14 @@ function get_all_inspection_plan(){
     return db_query($sql, _("Can not get inspection plan header"));
 }
 
-
-
 function get_inspection_plan($id){
-    
+    $sql = "SELECT * FROM Z_inspection_plan_header WHERE id=".db_escape($id);
+    return db_query($sql, _("Can not get inspection plan header"));
 }
 
 function get_inspection_plan_item($id){
-    
+    $sql = "SELECT * FROM Z_inspection_plan_content WHERE inspection_plan_id=".$id;
+    return db_query($sql, _("Can not get inspection plan header"));
 }
 
 function insert_inspection_plan($cart){
@@ -21,7 +21,7 @@ function insert_inspection_plan($cart){
             . "(`description`, `task_list_type`, `created_by`, `created_date`, `modified_by`, `modified_date`) "
             . "VALUES (". db_escape($cart->desc).",". db_escape($cart->type).",". db_escape($cart->created_by)
             .", ". db_escape($cart->date_created).", ". db_escape($cart->modified_by).", ". db_escape($cart->date_modified).")";
-    $plan_id = db_query($sql);
+    $plan_id = db_insert_id(db_query($sql));
     
     foreach ($cart->plan_contents as $line_no=>$content) {
         insert_inspection_plan_content($plan_id,$content);
@@ -29,6 +29,20 @@ function insert_inspection_plan($cart){
     
     return $plan_id;
     
+}
+
+function update_inspection_plan($id,$cart){
+    
+}
+
+function delete_inspection_plan($id){
+    $sql = "DELETE FROM `Z_inspection_plan_header` WHERE id=".db_escape($id);
+    db_query($sql);
+}
+
+function delete_inspection_plan_content($id){
+    $sql = "DELETE FROM `Z_inspection_plan_content` WHERE inspection_plan_id=".db_escape($id);
+    db_query($sql);
 }
 
 function insert_inspection_plan_content($plan_id,$content){

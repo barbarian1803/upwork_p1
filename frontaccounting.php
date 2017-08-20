@@ -37,7 +37,6 @@ if (!isset($path_to_root) || isset($_GET['path_to_root']) || isset($_POST['path_
             global $firephp;
             $firephp->fb($obj);
         }
-        
         function ConsoleDebug($obj){
             ChromePhp::log($obj);
         }

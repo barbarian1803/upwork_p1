@@ -32,6 +32,21 @@ page(_("Inspection plan list"), false, false, "", $js);
 echo "<center><a href='".$path_to_root."/mod_inspection_plan/create_inspection_plan.php?NewPlan=Yes'>Create inspection list</a></center><br/>";
 
 //-----------------------------------------------------------------------------------------------
+$id = find_submit("Delete");
+if($id!=-1){
+    delete_inspection_plan($id);
+    delete_inspection_plan_content($id);
+    $Ajax->activate("_page_body");
+    display_notification(_("Inspection plan has been deleted!"));
+}
+
+$id = find_submit("Edit");
+if($id!=-1){
+    meta_forward($path_to_root.'/mod_inspection_plan/create_inspection_plan.php', "EditPlan=".$id);
+}
+
+//-----------------------------------------------------------------------------------------------
+start_form();
 start_table(TABLESTYLE, "width='70%'", 2);
 
 $th = array(_("No"), _("Description"),
@@ -40,10 +55,11 @@ inactive_control_column($th);
 table_header($th);
 
 $result = get_all_inspection_plan();
+$no = 1;
 $k=0;
 while($row = db_fetch($result)){
     alt_table_row_color($k);
-    $link = viewer_link($k,"mod_inspection_plan/inspection_list_view.php?id=".$row["id"]);
+    $link = viewer_link($no++,"mod_inspection_plan/inspection_list_view.php?id=".$row["id"]);
     label_cell($link);
     label_cell($row["description"]);
     label_cell($row["task_list_type"]);
@@ -53,6 +69,6 @@ while($row = db_fetch($result)){
 
 
 end_table(1);
-
+end_form();
 end_page();
 
