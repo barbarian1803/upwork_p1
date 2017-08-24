@@ -1,6 +1,7 @@
 <?php
 
 function inspection_plan_header($cart) {
+    global $is_edit;
     start_outer_table(TABLESTYLE2, "width='80%'");
 
     table_section(1);
@@ -14,7 +15,12 @@ function inspection_plan_header($cart) {
 
 
     table_section(2);
-    date_row(_("Date created"), 'date_created');
+    if($is_edit){
+        label_row(_("Date created"), sql2date($cart->date_created));
+        date_row(_("Date modified"), 'date_modified');
+    }else{
+            date_row(_("Date created"), 'date_created');
+    }
 
     end_outer_table(1);
 }
@@ -41,7 +47,7 @@ function inspection_plan_content($cart) {
             label_cell($content->is_mandatory == 1 ? "Yes" : "No");
             $array = array(1 => "Text", 2 => "Yes/No", 3 => "Dropdown", 4 => "Multi values", 5 => "Image");
             label_cell($array[$content->type]);
-            label_cell($content->options == "" ? $content->options : implode(",", $content->options));
+            label_cell($content->options == "" ? $content->options : implode(";", $content->options));
             edit_button_cell("Edit$line_no", _("Edit"), _('Edit document line'));
             delete_button_cell("Delete$line_no", _("Delete"), _('Remove line from document'));
             end_row();
@@ -91,6 +97,7 @@ function inspection_plan_control($cart, $line_no = -1) {
 }
 
 function UI_control() {
+    global $Ajax;
     $id = find_submit('Delete');
     if ($id != -1) {
         handle_delete_item($id);
@@ -136,9 +143,17 @@ function line_start_focus() {
 //-----------------------------
 
 function UI_after_process() {
+    global $path_to_root;
     if (isset($_GET['AddedID'])) {
         $trans_no = $_GET['AddedID'];
         display_notification_centered(_("Inspection plan has been processed"));
+        hyperlink_params($path_to_root . "/mod_inspection_plan/inspection_plan_list.php", _("Back to inspection list"), "");
+
+        display_footer_exit();
+    }
+    if (isset($_GET['EditedID'])) {
+        $trans_no = $_GET['EditedID'];
+        display_notification_centered(_("Inspection plan has been updated"));
         hyperlink_params($path_to_root . "/mod_inspection_plan/inspection_plan_list.php", _("Back to inspection list"), "");
 
         display_footer_exit();

@@ -31,8 +31,16 @@ function insert_inspection_plan($cart){
     
 }
 
-function update_inspection_plan($id,$cart){
-    
+function update_inspection_plan($cart){
+    $sql = "UPDATE `Z_inspection_plan_header` "
+            . "SET description=". db_escape($cart->desc).",task_list_type=". db_escape($cart->type)
+            .",modified_by=".db_escape($cart->modified_by).", modified_date=". date2sql(db_escape($cart->date_modified))
+            ." WHERE id=".db_escape($cart->id);
+    db_query($sql);
+    delete_inspection_plan_content($cart->id);
+    foreach ($cart->plan_contents as $line_no=>$content) {
+        insert_inspection_plan_content($cart->id,$content);
+    }
 }
 
 function delete_inspection_plan($id){

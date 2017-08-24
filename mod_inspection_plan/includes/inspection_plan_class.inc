@@ -1,5 +1,6 @@
 <?php
 class Inspection_plan {
+    var $id;
     var $desc;
     var $type;
     var $date_created;
@@ -12,7 +13,7 @@ class Inspection_plan {
     function __construct($user){
         $this->created_by = $user;
         $this->modified_by = $user;
-        
+        $this->id = -1;
         $this->clear_content();
     }
     
