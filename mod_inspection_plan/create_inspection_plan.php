@@ -34,7 +34,7 @@ page(_("Create inspection plan"), false, false, "", $js);
 UI_after_process();
 
 //-----------------------------
-$is_edit = "";
+$is_edit = null;
 
 if (isset($_GET["NewPlan"])){
     New_inspection_plan();
@@ -46,9 +46,11 @@ if (isset($_GET["EditPlan"])){
     $is_edit = true;
 }
 
-if($is_edit==""){
+if($is_edit==null && isset($_POST["is_edit"])){
     $is_edit = $_POST["is_edit"];
 }
+
+
 
 function New_inspection_plan() {
     unset($_SESSION["inspection_plan"]);

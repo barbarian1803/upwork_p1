@@ -49,7 +49,7 @@ class Plan_content{
     }
     
     function extract_option($opt){
-        return $this->options = $this->multiexplode(array(";",",",PHP_EOL), $opt);
+        return $this->options = $this->multiexplode(array(";",",",PHP_EOL,"\r"), $opt);
     }
     
     function multiexplode ($delimiters,$string) {
