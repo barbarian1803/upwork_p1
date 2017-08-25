@@ -103,7 +103,7 @@ function get_category_name($id)
 }
 
 function set_batch_number_id($category_id,$batch_number_id){
-    $sql = "UPDATE ".TB_PREF."stock_category SET batch_number_id=".db_escape($batch_number_id)." WHERE category_id=".db_escape($category_id);
+    $sql = "UPDATE ".TB_PREF."stock_category SET Z_batch_number_id=".db_escape($batch_number_id)." WHERE category_id=".db_escape($category_id);
     db_query($sql);
 }
 

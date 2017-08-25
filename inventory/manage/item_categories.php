@@ -160,7 +160,7 @@ if ($selected_id != -1) {
         $_POST['no_sale'] = $myrow["dflt_no_sale"];
         $_POST['no_purchase'] = $myrow["dflt_no_purchase"];
 
-        $_POST['batch_number_id'] = $myrow["batch_number_id"];
+        $_POST['batch_number_id'] = $myrow["Z_batch_number_id"];
     }
     hidden('selected_id', $selected_id);
     hidden('category_id');

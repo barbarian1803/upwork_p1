@@ -25,4 +25,5 @@ INSERT INTO `Z_batch_number_assign` (`id`, `type`, `batch_id`) VALUES
 
 ALTER TABLE `0_stock_moves` ADD `Z_batch_number` VARCHAR(255) NOT NULL AFTER `standard_cost`;
 ALTER TABLE `0_stock_master` ADD `Z_is_batch_controlled` BOOLEAN NOT NULL AFTER `fa_class_id`;
+ALTER TABLE `0_stock_master` ADD `Z_inspection_plan_id` BOOLEAN NOT NULL AFTER `Z_is_batch_controlled`;
 ALTER TABLE `0_stock_category` ADD `Z_batch_number_id` INT NOT NULL AFTER `dflt_no_purchase`;
