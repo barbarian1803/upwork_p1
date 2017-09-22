@@ -15,8 +15,7 @@ function js_get_data_in_parent($parent,$target){
         get_data_in_parent('".$parent."','".$target."');
         ";
     
-    return $ret;
-    
+    return $ret;  
 }
 
 function js_submit_data_in_parent($parent){

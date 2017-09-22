@@ -316,6 +316,8 @@ if (isset($_POST['ProcessGoodsReceived'])) {
 
 //--------------------------------------------------------------------------------------------------
 
+$_SESSION["inspection_result"] = array();
+
 start_form();
 
 edit_grn_summary($_SESSION['PO'], true);
