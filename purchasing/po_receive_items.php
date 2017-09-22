@@ -99,7 +99,7 @@ function display_po_receive_items() {
 
             if ($qty_outstanding > 0){
                 if($item["Z_inspection_plan_id"]>0){
-                    $inspect_link = viewer_link("Inspect", 'purchasing/inspect.php?stock_id=' . $ln_itm->stock_id."&name=".$ln_itm->line_no);
+                    $inspect_link = viewer_link("Inspect", 'purchasing/inspect.php?stock_id=' . $ln_itm->stock_id."&name=".$ln_itm->line_no.".&inspect_type=GRN");
                     qty_cells_readonly(null, $ln_itm->line_no, number_format2(0, $dec), "align=right", $inspect_link, $dec);
                 }else{
                     $inspect_link = "Inspect";

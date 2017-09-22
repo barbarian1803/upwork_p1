@@ -21,11 +21,21 @@ if(isset($_GET["name"]))
     $name = $_GET["name"];
 else
     $name = $_POST["name"];
+
+if(isset($_GET["inspect_type"]))
+    $inspect_type = $_GET["inspect_type"];
+else
+    $inspect_type = $_POST["inspect_type"];
     
 $stock = get_item($stock_id);
 
 $inspection_plan = db_fetch_assoc(get_inspection_plan($stock["Z_inspection_plan_id"]));
 $inspection_plan_item = get_inspection_plan_item($inspection_plan["id"]);
+
+$_SESSION["inspect_".$stock_id] = new Inspection_result($_SESSION["wa_current_user"]->user);
+
+
+
 
 function js_set_data_in_parent($parent,$value){
     $ret = "
@@ -58,13 +68,28 @@ page($_SESSION['page_title'], true, false, "", $js);
 
 
 if (isset($_POST["Submit"])){
+    
+    $parent_name = $_POST["name"];
+    $qty_received = $_POST["qty_received"];
+    $stock_id = $_POST["stock_id"];
+    $no = $_POST["no"];
+    
+    $_SESSION["inspect_".$stock]->stock_id = $stock_id;
+    
+    
+    for($i=0;$i<$no;$i++){
+        $_SESSION["inspect_".$stock]->contents[$i]->answer = $_POST["answer_".$no];
+    }
+    
     echo js_set_data_in_parent($_POST["name"],$_POST["qty_accepted"]);
+    
 }
 
 
 start_form();
 hidden("stock_id",$stock_id);
 hidden("name",$name);
+hidden("inspect_type",$inspect_type);
 start_table();
 start_row();
 label_cells(_("Item name"),$stock["description"]);
@@ -78,12 +103,13 @@ end_row();
 $no = 0;
 while(($plan_item=db_fetch($inspection_plan_item))!=null){
     $plan_ctn_obj = new Plan_content($plan_item["question"],$plan_item["is_mandatory"],$plan_item["answer_type"],$plan_item["option_list"]);
+    $_SESSION["inspect_".$stock_id]->contents[] = $plan_ctn_obj;
     start_row();
     $question = $plan_ctn_obj->is_mandatory?$plan_ctn_obj->question."*":$plan_ctn_obj->question;
     label_cells(_("Question"),$question);
     end_row();
     start_row();
-    $name = "question_".$no;
+    $name = "answer_".$no;
     switch ($plan_ctn_obj->type) {
         case 1: //text field
             text_cells(null,$name);
@@ -107,6 +133,7 @@ while(($plan_item=db_fetch($inspection_plan_item))!=null){
     $no++;
 }
 start_row();
+hidden("no",$no);
 qty_cells(_("Quantity accpeted"),"qty_accepted");
 end_row();
 end_table();
