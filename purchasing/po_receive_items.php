@@ -73,7 +73,8 @@ function display_po_receive_items() {
 
     if (count($_SESSION['PO']->line_items) > 0) {
         foreach ($_SESSION['PO']->line_items as $ln_itm) {
-
+            $item = get_item($ln_itm->stock_id);
+            
             alt_table_row_color($k);
 
             $qty_outstanding = $ln_itm->quantity - $ln_itm->qty_received;
@@ -96,11 +97,18 @@ function display_po_receive_items() {
             qty_cell($ln_itm->qty_received, false, $dec);
             qty_cell($qty_outstanding, false, $dec);
 
-            if ($qty_outstanding > 0)
-                qty_cells(null, $ln_itm->line_no, number_format2($ln_itm->receive_qty, $dec), "align=right", null, $dec);
-            else
+            if ($qty_outstanding > 0){
+                if($item["Z_inspection_plan_id"]>0){
+                    $inspect_link = viewer_link("Inspect", 'purchasing/inspect.php?stock_id=' . $ln_itm->stock_id."&name=".$ln_itm->line_no);
+                    qty_cells_readonly(null, $ln_itm->line_no, number_format2(0, $dec), "align=right", $inspect_link, $dec);
+                }else{
+                    $inspect_link = "Inspect";
+                    qty_cells(null, $ln_itm->line_no, number_format2($ln_itm->receive_qty, $dec), "align=right", $inspect_link, $dec);
+                }
+                
+            }else{
                 label_cell(number_format2($ln_itm->receive_qty, $dec), "align=right");
-            
+            }
             $batch_number = $batch_holder->get_batch_obj_by_stock_id($ln_itm->stock_id);
             text_cells("",$ln_itm->stock_id . "batch_number",$batch_number->get_next_number());
             $batch_number->increase_no();

@@ -3,8 +3,6 @@
 $page_security = 'SA_INVENTORYADJUSTMENT';
 $path_to_root = "..";
 
-$page_security = 'SA_INVENTORYADJUSTMENT';
-$path_to_root = "..";
 include_once($path_to_root . "/includes/ui/items_cart.inc");
 
 include_once($path_to_root . "/includes/session.inc");

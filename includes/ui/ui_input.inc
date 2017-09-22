@@ -827,12 +827,54 @@ function amount_cells_ex($label, $name, $size, $max=null, $init=null, $params=nu
 	$Ajax->addAssign($name, $name, 'dec', $dec);
 }
 
+function amount_cells_ex_readonly($label, $name, $size, $max=null, $init=null, $params=null, $post_label=null, $dec=null)
+{
+	global $Ajax;
+
+	if (!isset($dec))
+	  	$dec = user_price_dec();
+	if (!isset($_POST[$name]) || $_POST[$name] == "")
+	{
+		if ($init !== null)
+			$_POST[$name] = $init;
+		else
+			$_POST[$name] = '';
+	}
+	if ($label != null)
+	{
+		if ($params == null)
+			$params = "class='label'";
+		label_cell($label, $params);
+	}
+	if (!isset($max))
+		$max = $size;
+
+	if ($label != null)
+		echo "<td>";
+	else
+		echo "<td align='right'>";
+
+	echo "<input readonly class='amount' type=\"text\" name=\"$name\" size=\"$size\" maxlength=\"$max\" dec=\"$dec\" value=\"" . $_POST[$name]. "\">";
+
+	if ($post_label) {
+		echo "<span id='_{$name}_label'> $post_label</span>";
+		$Ajax->addUpdate($name, '_'.$name.'_label', $post_label);
+	}
+	echo "</td>\n";
+	$Ajax->addUpdate($name, $name, $_POST[$name]);
+	$Ajax->addAssign($name, $name, 'dec', $dec);
+}
 
 //-----------------------------------------------------------------------------------
 
 function amount_cells($label, $name, $init=null, $params=null, $post_label=null, $dec=null)
 {
 	amount_cells_ex($label, $name, 15, 15, $init, $params, $post_label, $dec);
+}
+
+function amount_cells_readonly($label, $name, $init=null, $params=null, $post_label=null, $dec=null)
+{
+	amount_cells_ex_readonly($label, $name, 15, 15, $init, $params, $post_label, $dec);
 }
 
 //JAM  Allow entered unit prices to be fractional
@@ -866,6 +908,14 @@ function qty_cells($label, $name, $init=null, $params=null, $post_label=null, $d
 	  	$dec = user_qty_dec();
 
 	amount_cells_ex($label, $name, 15, 15, $init, $params, $post_label, $dec);
+}
+
+function qty_cells_readonly($label, $name, $init=null, $params=null, $post_label=null, $dec=null)
+{
+	if (!isset($dec))
+	  	$dec = user_qty_dec();
+
+              amount_cells_ex_readonly($label, $name, 15, 15, $init, $params, $post_label, $dec);
 }
 
 function qty_row($label, $name, $init=null, $params=null, $post_label=null, $dec=null)
