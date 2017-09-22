@@ -74,15 +74,19 @@ if (isset($_POST["Submit"])){
     $stock_id = $_POST["stock_id"];
     $no = $_POST["no"];
     
-    $_SESSION["inspect_".$stock]->stock_id = $stock_id;
+    $_SESSION["inspect_".$stock_id]->stock_id = $stock_id;
     
     
-    for($i=0;$i<$no;$i++){
-        $_SESSION["inspect_".$stock]->contents[$i]->answer = $_POST["answer_".$no];
+    for($i=0;$i<$_POST["no"];$i++){
+        if(isset($_POST["answer_".$i]))
+            $_SESSION["inspect_".$stock_id]->contents[$i]->answer = $_POST["answer_".$i];
+        else
+            $_SESSION["inspect_".$stock_id]->contents[$i]->answer = null;
     }
     
     echo js_set_data_in_parent($_POST["name"],$_POST["qty_accepted"]);
     
+    ConsoleDebug($_SESSION["inspect_".$stock_id]);
 }
 
 
@@ -103,7 +107,7 @@ end_row();
 $no = 0;
 while(($plan_item=db_fetch($inspection_plan_item))!=null){
     $plan_ctn_obj = new Plan_content($plan_item["question"],$plan_item["is_mandatory"],$plan_item["answer_type"],$plan_item["option_list"]);
-    $_SESSION["inspect_".$stock_id]->contents[] = $plan_ctn_obj;
+    $_SESSION["inspect_".$stock_id]->contents[$no] = $plan_ctn_obj;
     start_row();
     $question = $plan_ctn_obj->is_mandatory?$plan_ctn_obj->question."*":$plan_ctn_obj->question;
     label_cells(_("Question"),$question);
