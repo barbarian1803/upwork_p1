@@ -6,6 +6,7 @@ class BatchNumberHolder{
     function __construct() {
         $sql = "SELECT * FROM Z_batch_number_master";
         $result = db_query($sql);
+        $this->all_batch_number["id_1"] = new BatchNumber(1,"None",0);
         while($row = db_fetch_assoc($result)){
             $this->all_batch_number["id_".$row["id"]] = new BatchNumber($row["id"],$row["string_format"],$row["serial_no"]);
         }
@@ -24,6 +25,7 @@ class BatchNumberHolder{
     function get_batch_obj_by_stock_id($id){
         $sql = "SELECT category_id,Z_is_batch_controlled FROM ".TB_PREF."stock_master WHERE stock_id=".db_escape($id);
         $output = db_fetch_row(db_query($sql));
+        
         if($output[1]==1){
             $category_id = "cat_".$output[0];
             return $this->all_category[$category_id];

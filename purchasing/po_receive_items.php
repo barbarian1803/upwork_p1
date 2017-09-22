@@ -59,7 +59,6 @@ function display_po_receive_items() {
     $_SESSION["batch_holder"] = new BatchNumberHolder();
     $batch_holder = &$_SESSION["batch_holder"];
     
-    
     div_start('grn_items');
     start_table(TABLESTYLE, "colspan=7 width='90%'");
     $th = array(_("Item Code"), _("Description"), _("Ordered"), _("Units"), _("Received"),
@@ -99,7 +98,7 @@ function display_po_receive_items() {
 
             if ($qty_outstanding > 0){
                 if($item["Z_inspection_plan_id"]>0){
-                    $inspect_link = viewer_link("Inspect", 'purchasing/inspect.php?stock_id=' . $ln_itm->stock_id."&name=".$ln_itm->line_no.".&inspect_type=GRN");
+                    $inspect_link = viewer_link("Inspect", 'purchasing/inspect.php?stock_id=' . $ln_itm->stock_id."&name=".$ln_itm->line_no."&inspect_type=GRN");
                     qty_cells_readonly(null, $ln_itm->line_no, number_format2(0, $dec), "align=right", $inspect_link, $dec);
                 }else{
                     $inspect_link = "Inspect";
@@ -116,7 +115,6 @@ function display_po_receive_items() {
             amount_cell($line_total);
             end_row();
         }
-        Debug_FirePHP($batch_holder);
     }
 
     $colspan = count($th) - 1;
@@ -263,9 +261,8 @@ function process_receive_po() {
     new_doc_date($_POST['DefaultReceivedDate']);
     unset($_SESSION['PO']->line_items);
     unset($_SESSION['PO']);
-    Debug_FirePHP($_SESSION['batch_holder']);
-    $_SESSION['batch_holder']->save_current_no();
     
+    $_SESSION['batch_holder']->save_current_no();
     unset($_SESSION['batch_holder']);
     meta_forward($_SERVER['PHP_SELF'], "AddedID=$grn_no");
 }

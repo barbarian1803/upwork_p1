@@ -392,12 +392,21 @@ function po_item_controls(&$order, &$rowcounter, $line_no = -1) {
         $qty_rcvd = '';
     }
 
+    $item = get_item($_POST["stock_id"]);
+    
     if ($order->fixed_asset) {
         label_cell(1, '', 'qty');
         hidden('qty', 1);
-    } else
-        qty_cells(null, 'qty', null, null, null, $dec);
-
+    } else {
+        if($item["Z_inspection_plan_id"]>0){
+            $inspect_link = viewer_link("Inspect", 'purchasing/inspect.php?stock_id=' .$_POST["stock_id"]."&name=qty&inspect_type=GRN");
+            ConsoleDebug($inspect_link);
+            qty_cells_readonly(null, "qty", null,null, $inspect_link, $dec);
+        }else{
+            $inspect_link = "Inspect";
+            qty_cells(null, "qty", null, "align=right", $inspect_link, $dec);
+        }
+    }
     qty_cell($qty_rcvd, false, $dec);
 
     label_cell($_POST['units'], '', 'units');

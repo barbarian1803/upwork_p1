@@ -15,6 +15,7 @@ $page_security = 'SA_PURCHASEORDER';
 include_once($path_to_root . "/purchasing/includes/po_class.inc");
 include_once($path_to_root . "/admin/includes/batch_number_class.php");
 include_once($path_to_root . "/includes/session.inc");
+include_once($path_to_root . "/includes/ui/ui_controls.inc");
 include_once($path_to_root . "/purchasing/includes/purchasing_ui.inc");
 include_once($path_to_root . "/purchasing/includes/db/suppliers_db.inc");
 include_once($path_to_root . "/reporting/includes/reporting.inc");
