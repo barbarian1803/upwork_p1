@@ -40,26 +40,37 @@ class Inspection_result {
     var $stock_id;
     var $desc;
     var $type;
+    
     var $date_created;
     var $created_by;
     var $date_modified;
     var $modified_by;
+    
     var $qty_received;
     var $qty_accepted;
     var $inspection_type;
-    var $document_no;
-    var $document_item;
+    
+    var $document_no = "-";
+    var $document_item = "-";
+    
     var $grn_batch_id;
     var $grn_item_id;
+    
     var $supplier;
-
+    var $batch_no;
+    
     var $contents;
+    
+    var $reject_reason;
+    var $signature;
     
     function __construct($user){
         $this->created_by = $user;
         $this->modified_by = $user;
         $this->id = -1;
         $this->clear_content();
+        $this->date_created = date("Y-m-d");
+        $this->date_modified = date("Y-m-d");
     }
     
     function clear_content(){

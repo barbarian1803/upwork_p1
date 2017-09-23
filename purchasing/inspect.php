@@ -11,6 +11,7 @@ include_once($path_to_root . "/purchasing/includes/purchasing_db.inc");
 include_once($path_to_root . "/purchasing/includes/purchasing_ui.inc");
 include_once($path_to_root . "/admin/db/mod_batch_number_db.php");
 include_once($path_to_root . "/mod_inspection_plan/db/inspection_plan_db.php");
+include_once($path_to_root . "/inventory/includes/batch_list_ui.inc");
 
 if(isset($_GET["stock_id"]))
     $stock_id = $_GET["stock_id"];
@@ -34,32 +35,8 @@ $inspection_plan_item = get_inspection_plan_item($inspection_plan["id"]);
 
 if (!isset($_POST["Submit"])){
     $_SESSION["inspect_".$stock_id] = new Inspection_result($_SESSION["wa_current_user"]->user);
-}
-
-
-
-function js_set_data_in_parent($parent,$value){
-    $ret = "
-        <script type='text/javascript'>
-        function set_data_in_parent(parent,value){
-            var oDom = opener.document;
-            var elem = oDom.getElementsByName(parent)[0];
-            if (elem) {
-                elem.value=value;
-            }
-        }
-        set_data_in_parent('".$parent."','".$value."');
-        </script>    
-        ";
-    return $ret;
-}
-
-function close_window(){
-    echo "
-    <script type='text/javascript'>
-        window.close();
-    </script>
-";
+    $_SESSION["inspect_".$stock_id]->id = $inspection_plan["id"];
+    $_SESSION["inspect_".$stock_id]->inspection_type = $inspect_type;
 }
 
 $js = "";
@@ -70,10 +47,7 @@ if (user_use_date_picker())
     $js .= get_js_date_picker();
 $_SESSION['page_title'] = _($help_context = "Inspection");
  
-
-
 page($_SESSION['page_title'], true, false, "", $js);
-
 
 function can_process(){
     $stock_id = $_POST["stock_id"];
@@ -91,11 +65,17 @@ function can_process(){
 function submit_process(){
     $parent_name = $_POST["name"];
     $qty_received = $_POST["qty_received"];
+    $qty_accepted = $_POST["qty_accepted"];
     $stock_id = $_POST["stock_id"];
     $no = $_POST["no"];
     
     $_SESSION["inspect_".$stock_id]->stock_id = $stock_id;
     
+    $_SESSION["inspect_".$stock_id]->reject_reason = $_POST["reason"];
+    $_SESSION["inspect_".$stock_id]->signature = $_POST["signature"];
+    
+    $_SESSION["inspect_".$stock_id]->qty_received = $qty_received;
+    $_SESSION["inspect_".$stock_id]->qty_accepted = $qty_accepted;
     
     for($i=0;$i<$_POST["no"];$i++){
         if(isset($_POST["answer_".$i]))
@@ -104,6 +84,9 @@ function submit_process(){
             $_SESSION["inspect_".$stock_id]->contents[$i]->answer = null;
     }
     
+    $_SESSION["inspection_result"]["inspect_".$stock_id] = $_SESSION["inspect_".$stock_id];
+    unset($_SESSION["inspect_".$stock_id]);
+            
     echo js_set_data_in_parent($_POST["name"],$_POST["qty_accepted"]);
     close_window();
 }

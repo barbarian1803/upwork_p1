@@ -387,7 +387,6 @@ function po_item_controls(&$order, &$rowcounter, $line_no = -1) {
             $_POST['req_del_date'] = add_days(Today(), $SysPrefs->default_receival_required_by());
         if($order->trans_type == ST_SUPPRECEIVE){
             $_POST['batch_number'] = $_SESSION["batch_holder"]->get_batch_obj_by_stock_id($_POST['stock_id'])->get_next_number();
-            Debug_FirePHP($_POST['batch_number']);
         }
         $qty_rcvd = '';
     }
@@ -398,14 +397,19 @@ function po_item_controls(&$order, &$rowcounter, $line_no = -1) {
         label_cell(1, '', 'qty');
         hidden('qty', 1);
     } else {
-        if($item["Z_inspection_plan_id"]>0){
-            $inspect_link = viewer_link("Inspect", 'purchasing/inspect.php?stock_id=' .$_POST["stock_id"]."&name=qty&inspect_type=GRN");
-            ConsoleDebug($inspect_link);
-            qty_cells_readonly(null, "qty", null,null, $inspect_link, $dec);
+        if ($order->trans_type == ST_SUPPRECEIVE){
+            if($item["Z_inspection_plan_id"]>0){
+                $inspect_link = viewer_link("Inspect", 'purchasing/inspect.php?stock_id=' .$_POST["stock_id"]."&name=qty&inspect_type=GRN");
+                ConsoleDebug($inspect_link);
+                qty_cells_readonly(null, "qty", null,null, $inspect_link, $dec);
+            }else{
+                $inspect_link = "Inspect";
+                qty_cells(null, "qty", null, "align=right", $inspect_link, $dec);
+            }
         }else{
-            $inspect_link = "Inspect";
-            qty_cells(null, "qty", null, "align=right", $inspect_link, $dec);
+            qty_cells(null, "qty", null, "align=right", null, $dec);
         }
+        
     }
     qty_cell($qty_rcvd, false, $dec);
 

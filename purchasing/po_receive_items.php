@@ -13,11 +13,13 @@
 $page_security = 'SA_GRN';
 $path_to_root = "..";
 include_once($path_to_root . "/purchasing/includes/po_class.inc");
+include_once($path_to_root . "/mod_inspection_plan/includes/inspection_plan_class.inc");
 include_once($path_to_root . "/admin/includes/batch_number_class.php");
 include_once($path_to_root . "/includes/session.inc");
 include_once($path_to_root . "/purchasing/includes/purchasing_db.inc");
 include_once($path_to_root . "/purchasing/includes/purchasing_ui.inc");
 include_once($path_to_root . "/admin/db/mod_batch_number_db.php");
+include_once($path_to_root . "/mod_inspection_plan/db/inspection_result_db.php");
 
 $js = "";
 if ($SysPrefs->use_popup_windows)
@@ -257,14 +259,36 @@ function process_receive_po() {
     $grn->ex_rate = input_num('_ex_rate', null);
  
     $grn_no = add_grn($grn);
-
+    
+    ConsoleDebug($_SESSION["inspection_result"]);
+    ConsoleDebug($grn);
+    
+    foreach ($_SESSION["inspection_result"] as $key => $insp_obj) {
+        $insp_obj->supplier = $grn->supplier_id;
+        $insp_obj->grn_batch_id = $grn_no;
+        
+        foreach ($grn->line_items as $item) {
+            if ($item->stock_id==$insp_obj->stock_id){
+                $insp_obj->grn_item_id = $item->grn_item_id;
+                $insp_obj->batch_no = $item->batch_number;
+                break;
+            }
+        }
+        
+        $inspect_header_id = insert_inspect_item_header($insp_obj);
+        
+        foreach($insp_obj->contents as $content){
+            insert_inspect_item_content($inspect_header_id,$content);
+        }
+    }
+    
     new_doc_date($_POST['DefaultReceivedDate']);
     unset($_SESSION['PO']->line_items);
     unset($_SESSION['PO']);
     
     $_SESSION['batch_holder']->save_current_no();
     unset($_SESSION['batch_holder']);
-    meta_forward($_SERVER['PHP_SELF'], "AddedID=$grn_no");
+    //meta_forward($_SERVER['PHP_SELF'], "AddedID=$grn_no");
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -312,9 +336,9 @@ if (isset($_POST['ProcessGoodsReceived'])) {
 }
 
 //--------------------------------------------------------------------------------------------------
-
-$_SESSION["inspection_result"] = array();
-
+if (!isset($_POST['ProcessGoodsReceived'])) {
+    $_SESSION["inspection_result"] = array();
+}
 start_form();
 
 edit_grn_summary($_SESSION['PO'], true);
