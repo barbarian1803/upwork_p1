@@ -51,10 +51,8 @@ if (isset($_GET['NewAdjustment'])) {
     }
 }
 
-$js .= js_get_data_in_parent("qty","parent_value");
 $js .= js_get_data_in_parent("FromStockLocation","from_loc");
 $js .= js_get_data_in_parent("ToStockLocation","to_loc");
-$js .= show_quantity("parent_value");
 $js .= show_location("FromLoc","from_loc","From location");
 $js .= show_location("ToLoc","to_loc","To location");
 
@@ -65,19 +63,15 @@ function process_batch_selector(){
     
     $_SESSION["batch"][$stock_id]["entered_qty"] = $entered_qty;
     $_SESSION["batch"][$stock_id]["batch_number"] = $batch_number;
+    
+    echo js_set_data_in_parent("qty",array_sum($entered_qty));
 }
 
 function can_process(){
     $entered_qty = $_POST["qty_input"];
     $qoh_qty = $_POST["qoh"];
     $batch_number = $_POST["batch_number"];
-    $parent_value = $_POST["parent_value"];
-    
-    if(array_sum($entered_qty)!=$parent_value){
-        display_error(_("The quantity values entered don't match with the parent values"));
-        return false;
-    }
-    
+        
     for($i=0;$i<count($entered_qty);$i++){
         if($entered_qty[$i]>$qoh_qty[$i]){
             display_error(_("The quantity value entered exceeded the stock quantity on hand"));
@@ -100,7 +94,6 @@ page($_SESSION['page_title'], true, false, "", $js);
 echo "<center><h3>Item adjustment per batch</h3></center>";
 echo "<center>";
 echo "<span>Item: ".$stock["description"]."</span>&nbsp&nbsp&nbsp";
-echo "<span id='amount'></span>";
 echo "<br/>";
 echo "<span id='FromLoc'></span>&nbsp;&nbsp;<span id='ToLoc'></span>";
 echo "</center>";
@@ -132,7 +125,6 @@ qty_cell($total);
 qty_cell("");
 end_row();
 end_table();
-hidden("parent_value");
 hidden("from_loc");
 hidden("to_loc");
 hidden("stock_id",$stock_id);

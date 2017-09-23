@@ -138,7 +138,7 @@ function transfer_edit_item_controls(&$order, $line_no = -1) {
         qty_cell(1, false, 0);
     } else {
         $link_popup = viewer_link("Batch", 'inventory/transfer_batch_selector.php?stock_id=' . $_POST['stock_id'].'&from_loc='.$_POST['FromStockLocation'].'&to_loc='.$_POST['ToStockLocation']);
-        small_qty_cells(null, 'qty', $_POST['qty'], null, $link_popup, $dec);
+        small_qty_cells_readonly(null, 'qty', $_POST['qty'], null, $link_popup, $dec);
     }
     label_cell($_POST['units'], '', 'units');
 

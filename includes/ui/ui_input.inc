@@ -954,6 +954,12 @@ function small_qty_cells($label, $name, $init=null, $params=null, $post_label=nu
 	amount_cells_ex($label, $name, 7, 12, $init, $params, $post_label, $dec);
 }
 
+function small_qty_cells_readonly($label, $name, $init=null, $params=null, $post_label=null, $dec=null)
+{
+  	if (!isset($dec))
+	  	$dec = user_qty_dec();
+        amount_cells_ex_readonly($label, $name, 7, 12, $init, $params, $post_label, $dec);
+}
 //-----------------------------------------------------------------------------------
 
 function textarea_cells($label, $name, $value, $cols, $rows, $title = null, $params="")

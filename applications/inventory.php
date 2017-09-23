@@ -34,6 +34,10 @@ class inventory_app extends application
 			"inventory/manage/items.php?", 'SA_ITEM', MENU_ENTRY);
 		$this->add_lapp_function(2, _("&Foreign Item Codes"),
 			"inventory/manage/item_codes.php?", 'SA_FORITEMCODE', MENU_MAINTENANCE);
+                
+                $this->add_lapp_function(2, _("&Inspection Plan"),
+			"mod_inspection_plan/inspection_plan_list.php?", 'SA_ITEM', MENU_ENTRY);
+                
 		$this->add_lapp_function(2, _("Sales &Kits"),
 			"inventory/manage/sales_kits.php?", 'SA_SALESKIT', MENU_MAINTENANCE);
 		$this->add_lapp_function(2, _("Item &Categories"),
@@ -44,6 +48,7 @@ class inventory_app extends application
 			"inventory/manage/item_units.php?", 'SA_UOM', MENU_MAINTENANCE);
 		$this->add_rapp_function(2, _("&Reorder Levels"),
 			"inventory/reorder_level.php?", 'SA_REORDER', MENU_MAINTENANCE);
+                
 
 		$this->add_module(_("Pricing and Costs"));
 		$this->add_lapp_function(3, _("Sales &Pricing"),

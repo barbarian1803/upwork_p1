@@ -44,8 +44,6 @@ class setup_app extends application
 			"admin/payment_terms.php?", 'SA_PAYTERMS', MENU_MAINTENANCE);
 		$this->add_lapp_function(1, _("Shi&pping Company"),
 			"admin/shipping_companies.php?", 'SA_SHIPPING', MENU_MAINTENANCE);
-                $this->add_lapp_function(1, _("&Inspection Plan"),
-			"mod_inspection_plan/inspection_plan_list.php?", 'SA_SETUPCOMPANY', MENU_MAINTENANCE);
 		$this->add_rapp_function(1, _("&Points of Sale"),
 			"sales/manage/sales_points.php?", 'SA_POSSETUP', MENU_MAINTENANCE);
 		$this->add_rapp_function(1, _("&Printers"),

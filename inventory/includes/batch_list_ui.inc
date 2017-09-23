@@ -18,6 +18,22 @@ function js_get_data_in_parent($parent,$target){
     return $ret;  
 }
 
+function js_set_data_in_parent($parent,$value){
+    $ret = "
+        <script type='text/javascript'>
+        function set_data_in_parent(parent,value){
+            var oDom = opener.document;
+            var elem = oDom.getElementsByName(parent)[0];
+            if (elem) {
+                elem.value=value;
+            }
+        }
+        set_data_in_parent('".$parent."','".$value."');
+        </script>    
+        ";
+    return $ret;
+}
+
 function js_submit_data_in_parent($parent){
     echo "
     <script type='text/javascript'>

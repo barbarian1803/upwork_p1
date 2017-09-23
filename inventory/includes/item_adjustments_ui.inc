@@ -162,7 +162,7 @@ function adjustment_edit_item_controls(&$order, $line_no = -1) {
         qty_cell(1, false, 0);
     } else {
         $link_popup = viewer_link("Batch", 'inventory/adjustment_batch_selector.php?stock_id=' . $_POST['stock_id'] . '&location='.$_POST['StockLocation']);
-        qty_cells(null, 'qty', $_POST['qty'], null, $link_popup, $dec);
+        qty_cells_readonly(null, 'qty', $_POST['qty'], null, $link_popup, $dec);
     }
     label_cell($_POST['units'], '', 'units');
 

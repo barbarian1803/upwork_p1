@@ -44,7 +44,6 @@ if (isset($_GET['NewAdjustment'])) {
     }
 }
 
-$js .= js_get_data_in_parent("qty","parent_value");
 $js .= js_get_data_in_parent("StockLocation","location");
 
 $js .= show_quantity("parent_value");
@@ -57,19 +56,15 @@ function process_batch_selector(){
     
     $_SESSION["batch"][$stock_id]["entered_qty"] = $entered_qty;
     $_SESSION["batch"][$stock_id]["batch_number"] = $batch_number;
+    
+    echo js_set_data_in_parent("qty",array_sum($entered_qty));
 }
 
 function can_process(){
     $entered_qty = $_POST["qty_input"];
     $qoh_qty = $_POST["qoh"];
     $batch_number = $_POST["batch_number"];
-    $parent_value = $_POST["parent_value"];
-    
-    if(array_sum($entered_qty)!=$parent_value){
-        display_error(_("The quantity values entered don't match with the parent values"));
-        return false;
-    }
-    
+        
     for($i=0;$i<count($entered_qty);$i++){
         if($entered_qty[$i]<0&&abs($entered_qty[$i])>$qoh_qty[$i]){
             display_error(_("The quantity value entered exceeded the stock quantity on hand"));
@@ -123,7 +118,6 @@ qty_cell($total);
 qty_cell("");
 end_row();
 end_table();
-hidden("parent_value");
 hidden("stock_id",$stock_id);
 hidden("location",$location);
 submit_center_first("save", "Save");
