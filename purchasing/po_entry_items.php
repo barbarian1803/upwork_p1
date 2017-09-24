@@ -120,6 +120,9 @@ if (isset($_GET['AddedID'])) {
 
     hyperlink_params($_SERVER['PHP_SELF'], _("Enter &Another GRN"), "NewGRN=Yes");
 
+    hyperlink_no_params_new_tab("$path_to_root/mod_barcode/barcode_generator.php?trans_type=".$trans_type."&trans_id=".$trans_no, _("Generate barcode for this GRN"));
+
+    
     display_footer_exit();
 } elseif (isset($_GET['AddedPI'])) {
 

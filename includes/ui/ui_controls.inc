@@ -233,6 +233,19 @@ function hyperlink_no_params($target, $label, $center=true)
 		echo "</center>";
 }
 
+function hyperlink_no_params_new_tab($target, $label, $center=true)
+{
+	$id = default_focus();
+	$pars = access_string($label);
+	if ($target == '')
+		$target = $_SERVER['PHP_SELF'];
+	if ($center)
+		echo "<br><center>";
+	echo "<a target=\"_blank\" href='$target' id='$id' $pars[1]>$pars[0]</a>\n";
+	if ($center)
+		echo "</center>";
+}
+
 function hyperlink_no_params_td($target, $label)
 {
 	echo "<td>";

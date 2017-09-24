@@ -46,6 +46,8 @@ if (isset($_GET['AddedID'])) {
 
     hyperlink_no_params("$path_to_root/purchasing/inquiry/po_search.php", _("Select a different &purchase order for receiving items against"));
 
+    hyperlink_no_params_new_tab("$path_to_root/mod_barcode/barcode_generator.php?trans_type=".$trans_type."&trans_id=".$grn, _("Generate barcode for this GRN"));
+    
     display_footer_exit();
 }
 
@@ -285,7 +287,7 @@ function process_receive_po() {
     
     $_SESSION['batch_holder']->save_current_no();
     unset($_SESSION['batch_holder']);
-    //meta_forward($_SERVER['PHP_SELF'], "AddedID=$grn_no");
+    meta_forward($_SERVER['PHP_SELF'], "AddedID=$grn_no");
 }
 
 //--------------------------------------------------------------------------------------------------

@@ -13,12 +13,6 @@ include_once($path_to_root . "/admin/db/mod_batch_number_db.php");
 include_once($path_to_root . "/mod_inspection_plan/db/inspection_plan_db.php");
 include_once($path_to_root . "/inventory/includes/batch_list_ui.inc");
 
-if(isset($_GET["finished"])){
-    echo js_set_data_in_parent($_GET["name"],$_GET["qty_accepted"]);
-    close_window();
-    return;
-}
-
 
 if(isset($_GET["stock_id"]))
     $stock_id = $_GET["stock_id"];
@@ -199,11 +193,14 @@ function submit_process(){
     unset($_SESSION["inspect_".$stock_id]);
     
     display_notification(_("Inspection finished"));
-    meta_forward("inspect.php","finished=1&name=".$parent_name."&qty_accepted=".$qty_accepted);
+    
+    echo js_set_data_in_parent($parent_name,$qty_accepted);
+    end_page();
 }
 
 if (isset($_POST["Submit"]) && can_process()){
     submit_process();
+    return;
 }
 
 start_form(true,false,$path_to_root."/purchasing/inspect.php");
@@ -271,7 +268,7 @@ text_cells(_("Driver signature"),"signature");
 end_row();
 end_table();
 
-submit_center_first('Submit', _("Submit"), '', true);
+submit_center_first('Submit', _("Submit"), '', false);
 end_form();
 div_end();
 end_page();
