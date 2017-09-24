@@ -13,6 +13,13 @@ include_once($path_to_root . "/admin/db/mod_batch_number_db.php");
 include_once($path_to_root . "/mod_inspection_plan/db/inspection_plan_db.php");
 include_once($path_to_root . "/inventory/includes/batch_list_ui.inc");
 
+if(isset($_GET["finished"])){
+    echo js_set_data_in_parent($_GET["name"],$_GET["qty_accepted"]);
+    close_window();
+    return;
+}
+
+
 if(isset($_GET["stock_id"]))
     $stock_id = $_GET["stock_id"];
 else
@@ -48,21 +55,109 @@ if (user_use_date_picker())
 $_SESSION['page_title'] = _($help_context = "Inspection");
  
 page($_SESSION['page_title'], true, false, "", $js);
+div_start("_page_body");
+
+function process_upload($file){
+    $upload_file = "";
+    if (isset($_FILES[$file]) && $_FILES[$file]['name'] != '') {
+        $result = $_FILES[$file]['error'];
+        $upload_file = 'Yes'; //Assume all is well to start off with
+        $filename = company_path() . '/images';
+        $filename .= "/" .substr(sha1($_FILES[$file]['name'].date("Y-m-d H:i:s")),0,25) . ".jpg";
+
+        if ($_FILES[$file]['error'] == UPLOAD_ERR_INI_SIZE) {
+            display_error(_('The file size is over the maximum allowed.'));
+            $upload_file = 'No';
+        } elseif ($_FILES[$file]['error'] > 0) {
+            display_error(_('Error uploading file.'));
+            $upload_file = 'No';
+        }
+
+        //But check for the worst 
+        if ((list($width, $height, $type, $attr) = getimagesize($_FILES[$file]['tmp_name'])) !== false)
+            $imagetype = $type;
+        else
+            $imagetype = false;
+
+        if ($imagetype != IMAGETYPE_GIF && $imagetype != IMAGETYPE_JPEG && $imagetype != IMAGETYPE_PNG) { //File type Check
+            display_warning(_('Only graphics files can be uploaded'));
+            $upload_file = 'No';
+        } elseif (!in_array(strtoupper(substr(trim($_FILES[$file]['name']), strlen($_FILES[$file]['name']) - 3)), array('JPG', 'PNG', 'GIF'))) {
+            display_warning(_('Only graphics files are supported - a file extension of .jpg, .png or .gif is expected'));
+            $upload_file = 'No';
+        }elseif ($_FILES[$file]['type'] == "text/plain") {  //File type Check
+            display_warning(_('Only graphics files can be uploaded'));
+            $upload_file = 'No';
+        } elseif (file_exists($filename)) {
+            $result = unlink($filename);
+            if (!$result) {
+                display_error(_('The existing image could not be removed'));
+                $upload_file = 'No';
+            }
+        }
+        if ($upload_file == 'Yes') {
+            
+            $result = move_uploaded_file($_FILES[$file]['tmp_name'], $filename);
+            return TRUE;
+        }else{
+            return FALSE;
+        }
+    }
+}
+
 
 function can_process(){
     $stock_id = $_POST["stock_id"];
+    
+    if($_POST["qty_received"]==""){
+        display_warning(_("Quantity received must be filled"));
+        return false;
+    }
+    
+    if($_POST["qty_accepted"]==""){
+        display_warning(_("Quantity accepted must be filled"));
+        return false;
+    }
+    
     for($i=0;$i<$_POST["no"];$i++){
         $type = $_SESSION["inspect_".$stock_id]->contents[$i]->type;
         
-        if(!isset($_POST["answer_".$i])&$type!=2){
-            display_warning(_("Question marked by * is mandatory, pelase answer all mandatory questions"));
-            return false;
+        switch ($type) {
+            case 1:
+                if(!isset($_POST["answer_".$i]) || $_POST["answer_".$i]==""){
+                    display_warning(_("Question marked by * is mandatory, pelase answer all mandatory questions"));
+                    return false;
+                }
+                break;
+            case 3:
+                if(!isset($_POST["answer_".$i])){
+                    display_warning(_("Question marked by * is mandatory, pelase answer all mandatory questions"));
+                    return false;
+                }
+                break;           
+            case 4:
+                if(!isset($_POST["answer_".$i])){
+                    display_warning(_("Question marked by * is mandatory, pelase answer all mandatory questions"));
+                    return false;
+                }
+                break;
+            
+            case 5:
+                if(!isset($_FILES["answer_".$i]) || $_FILES["answer_".$i]['name']==""){
+                    display_warning(_("Please choose file to upload"));
+                    return false;
+                }
+                break;
+            
+            default:
+                break;
         }
     }
     return true;
 }
 
 function submit_process(){
+    global $Ajax;
     $parent_name = $_POST["name"];
     $qty_received = $_POST["qty_received"];
     $qty_accepted = $_POST["qty_accepted"];
@@ -78,25 +173,38 @@ function submit_process(){
     $_SESSION["inspect_".$stock_id]->qty_accepted = $qty_accepted;
     
     for($i=0;$i<$_POST["no"];$i++){
-        if(isset($_POST["answer_".$i]))
-            $_SESSION["inspect_".$stock_id]->contents[$i]->answer = $_POST["answer_".$i];
-        else
-            $_SESSION["inspect_".$stock_id]->contents[$i]->answer = null;
+        $type = $_SESSION["inspect_".$stock_id]->contents[$i]->type;
+        
+        if($type==5){
+            $result = process_upload("answer_".$i);
+            
+            if(!$result){
+                return;
+            }
+            
+        }else if($type==2){
+            $_SESSION["inspect_".$stock_id]->contents[$i]->answer = check_value("answer_".$i);
+        }else{
+            if(isset($_POST["answer_".$i])){
+                $_SESSION["inspect_".$stock_id]->contents[$i]->answer = $_POST["answer_".$i];
+            }else{
+                $_SESSION["inspect_".$stock_id]->contents[$i]->answer = null;
+            }
+        }
     }
     
     $_SESSION["inspection_result"]["inspect_".$stock_id] = $_SESSION["inspect_".$stock_id];
     unset($_SESSION["inspect_".$stock_id]);
-            
-    echo js_set_data_in_parent($_POST["name"],$_POST["qty_accepted"]);
-    close_window();
+    
+    display_notification(_("Inspection finished"));
+    meta_forward("inspect.php","finished=1&name=".$parent_name."&qty_accepted=".$qty_accepted);
 }
 
 if (isset($_POST["Submit"]) && can_process()){
     submit_process();
 }
 
-
-start_form();
+start_form(true,false,$path_to_root."/purchasing/inspect.php");
 
 hidden("stock_id",$stock_id);
 hidden("name",$name);
@@ -163,5 +271,6 @@ end_table();
 
 submit_center_first('Submit', _("Submit"), '', true);
 end_form();
+div_end();
 end_page();
 

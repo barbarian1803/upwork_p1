@@ -403,7 +403,7 @@ function handle_commit_order() {
         new_doc_date($cart->orig_order_date);
         if ($cart->order_no == 0) { // new po/grn/invoice
             $trans_no = add_direct_supp_trans($cart);
-            ($cart->trans_type == ST_SUPPRECEIVE) ? $_SESSION["batch_holder"]->save_current_no():"";
+            ($cart->trans_type == ST_SUPPRECEIVE)?$_SESSION["batch_holder"]->save_current_no():"";
             if ($trans_no) {
                 unset($_SESSION['PO']);
                 unset($_SESSION['batch_holder']);
