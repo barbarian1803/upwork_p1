@@ -400,7 +400,6 @@ function po_item_controls(&$order, &$rowcounter, $line_no = -1) {
         if ($order->trans_type == ST_SUPPRECEIVE){
             if($item["Z_inspection_plan_id"]>0){
                 $inspect_link = viewer_link("Inspect", 'purchasing/inspect.php?stock_id=' .$_POST["stock_id"]."&name=qty&inspect_type=GRN");
-                ConsoleDebug($inspect_link);
                 qty_cells_readonly(null, "qty", null,null, $inspect_link, $dec);
             }else{
                 $inspect_link = "Inspect";

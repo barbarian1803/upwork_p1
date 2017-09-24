@@ -260,9 +260,6 @@ function process_receive_po() {
  
     $grn_no = add_grn($grn);
     
-    ConsoleDebug($_SESSION["inspection_result"]);
-    ConsoleDebug($grn);
-    
     foreach ($_SESSION["inspection_result"] as $key => $insp_obj) {
         $insp_obj->supplier = $grn->supplier_id;
         $insp_obj->grn_batch_id = $grn_no;

@@ -98,7 +98,7 @@ function process_upload($file){
         if ($upload_file == 'Yes') {
             
             $result = move_uploaded_file($_FILES[$file]['tmp_name'], $filename);
-            return TRUE;
+            return $filename;
         }else{
             return FALSE;
         }
@@ -180,6 +180,8 @@ function submit_process(){
             
             if(!$result){
                 return;
+            }else{
+                $_SESSION["inspect_".$stock_id]->contents[$i]->answer = $result;
             }
             
         }else if($type==2){

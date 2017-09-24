@@ -13,6 +13,7 @@
 $path_to_root = "..";
 $page_security = 'SA_PURCHASEORDER';
 include_once($path_to_root . "/purchasing/includes/po_class.inc");
+include_once($path_to_root . "/mod_inspection_plan/includes/inspection_plan_class.inc");
 include_once($path_to_root . "/admin/includes/batch_number_class.php");
 include_once($path_to_root . "/includes/session.inc");
 include_once($path_to_root . "/includes/ui/ui_controls.inc");
@@ -20,6 +21,7 @@ include_once($path_to_root . "/purchasing/includes/purchasing_ui.inc");
 include_once($path_to_root . "/purchasing/includes/db/suppliers_db.inc");
 include_once($path_to_root . "/reporting/includes/reporting.inc");
 include_once($path_to_root . "/admin/db/mod_batch_number_db.php");
+include_once($path_to_root . "/mod_inspection_plan/db/inspection_result_db.php");
 
 set_page_security(@$_SESSION['PO']->trans_type, array(ST_PURCHORDER => 'SA_PURCHASEORDER',
     ST_SUPPRECEIVE => 'SA_GRN',
@@ -403,7 +405,30 @@ function handle_commit_order() {
         new_doc_date($cart->orig_order_date);
         if ($cart->order_no == 0) { // new po/grn/invoice
             $trans_no = add_direct_supp_trans($cart);
-            ($cart->trans_type == ST_SUPPRECEIVE)?$_SESSION["batch_holder"]->save_current_no():"";
+            
+            if($cart->trans_type == ST_SUPPRECEIVE){
+                $_SESSION["batch_holder"]->save_current_no();
+                
+                foreach ($_SESSION["inspection_result"] as $key => $insp_obj) {
+                    $insp_obj->supplier = $cart->supplier_id;
+                    $insp_obj->grn_batch_id = $trans_no;
+
+                    foreach ($cart->line_items as $item) {
+                        if ($item->stock_id==$insp_obj->stock_id){
+                            $insp_obj->grn_item_id = $item->grn_item_id;
+                            $insp_obj->batch_no = $item->batch_number;
+                            break;
+                        }
+                    }
+
+                    $inspect_header_id = insert_inspect_item_header($insp_obj);
+
+                    foreach($insp_obj->contents as $content){
+                        insert_inspect_item_content($inspect_header_id,$content);
+                    }
+                }
+            }
+            
             if ($trans_no) {
                 unset($_SESSION['PO']);
                 unset($_SESSION['batch_holder']);
