@@ -31,7 +31,7 @@ else
     
 $stock = get_item($stock_id);
 
-$inspection_plan = db_fetch_assoc(get_inspection_plan($stock["Z_inspection_plan_id"]));
+$inspection_plan = db_fetch_assoc(get_inspection_plan($stock["z_inspection_plan_id"]));
 $inspection_plan_item = get_inspection_plan_item($inspection_plan["id"]);
 
 if (!isset($_POST["Submit"])){

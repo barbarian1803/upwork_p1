@@ -39,7 +39,7 @@ function getTransactions($category, $location, $item_like) {
                 item.description, 
                 item.inactive,
                 SUM(IF(move.stock_id IS NULL,0,move.qty)) AS QtyOnHand,
-                move.Z_batch_number as batch
+                move.z_batch_number as batch
 		
             FROM 
                 (". TB_PREF . "stock_master item,". TB_PREF . "stock_category category)
@@ -64,7 +64,7 @@ function getTransactions($category, $location, $item_like) {
 		category.description,
 		item.stock_id,
 		item.description,
-                move.Z_batch_number
+                move.z_batch_number
                 ORDER BY item.category_id,
 		item.stock_id";
 

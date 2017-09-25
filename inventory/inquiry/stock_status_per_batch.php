@@ -33,7 +33,7 @@ $result = get_qoh_on_date_per_batch($stock_id,$loc_code);
 $total = 0;
 while($myrow = db_fetch_assoc($result)){
     start_row();
-    label_cell($myrow["Z_batch_number"]);
+    label_cell($myrow["z_batch_number"]);
     qty_cell($myrow["total_per_batch"]);
     end_row();
     $total += $myrow["total_per_batch"];

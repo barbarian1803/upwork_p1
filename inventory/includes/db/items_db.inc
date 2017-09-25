@@ -228,13 +228,13 @@ function get_items_search($description, $type)
 }
 
 function set_batch_controlled($stock_id,$is_controlled){
-    $sql = "UPDATE ".TB_PREF."stock_master SET Z_is_batch_controlled=".db_escape($is_controlled).
+    $sql = "UPDATE ".TB_PREF."stock_master SET z_is_batch_controlled=".db_escape($is_controlled).
             " WHERE stock_id=".db_escape($stock_id);
     db_query($sql);
 }
 
 function set_inspection_plan_id_controlled($stock_id,$plan_id){
-    $sql = "UPDATE ".TB_PREF."stock_master SET Z_inspection_plan_id=".db_escape($plan_id).
+    $sql = "UPDATE ".TB_PREF."stock_master SET z_inspection_plan_id=".db_escape($plan_id).
             " WHERE stock_id=".db_escape($stock_id);
     db_query($sql);
 }

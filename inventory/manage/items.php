@@ -305,9 +305,9 @@ function item_settings(&$stock_id, $new_item) {
             $_POST['inactive'] = $myrow["inactive"];
             $_POST['editable'] = $myrow["editable"];
             
-            $_POST['is_batch_controlled'] = $myrow["Z_is_batch_controlled"];
+            $_POST['is_batch_controlled'] = $myrow["z_is_batch_controlled"];
             
-            $_POST['inspection_plan_id'] = $myrow["Z_inspection_plan_id"];
+            $_POST['inspection_plan_id'] = $myrow["z_inspection_plan_id"];
         }
         label_row(_("Item Code:"), $_POST['NewStockID']);
         hidden('NewStockID', $_POST['NewStockID']);

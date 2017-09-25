@@ -4,7 +4,7 @@ class BatchNumberHolder{
     var $all_batch_number;
     var $all_category;
     function __construct() {
-        $sql = "SELECT * FROM Z_batch_number_master";
+        $sql = "SELECT * FROM z_batch_number_master";
         $result = db_query($sql);
         $this->all_batch_number["id_1"] = new BatchNumber(1,"None",0);
         while($row = db_fetch_assoc($result)){
@@ -15,15 +15,15 @@ class BatchNumberHolder{
         $result = db_query($sql);
         while($row = db_fetch_assoc($result)){
             
-            if(array_key_exists("id_".$row["Z_batch_number_id"], $this->all_batch_number))
-                $this->all_category["cat_".$row["category_id"]] = &$this->all_batch_number["id_".$row["Z_batch_number_id"]];
+            if(array_key_exists("id_".$row["z_batch_number_id"], $this->all_batch_number))
+                $this->all_category["cat_".$row["category_id"]] = &$this->all_batch_number["id_".$row["z_batch_number_id"]];
             else
                 $this->all_category["cat_".$row["category_id"]] = &$this->all_batch_number["id_1"];
         }
     }
     
     function get_batch_obj_by_stock_id($id){
-        $sql = "SELECT category_id,Z_is_batch_controlled FROM ".TB_PREF."stock_master WHERE stock_id=".db_escape($id);
+        $sql = "SELECT category_id,z_is_batch_controlled FROM ".TB_PREF."stock_master WHERE stock_id=".db_escape($id);
         $output = db_fetch_row(db_query($sql));
         
         if($output[1]==1){
@@ -68,7 +68,7 @@ class BatchNumber{
     
     function save_cur_no(){
         if($this->string_number!="None"){
-            $sql = "UPDATE Z_batch_number_master SET serial_no=".db_escape($this->cur_number)." WHERE id=".db_escape($this->batch_no_id);
+            $sql = "UPDATE z_batch_number_master SET serial_no=".db_escape($this->cur_number)." WHERE id=".db_escape($this->batch_no_id);
             db_query($sql);
         }
     }
@@ -82,7 +82,7 @@ class CategoryBatchNumberGenerator{
     
     function __construct($category_id){
         $this->category_id = $category_id;
-        $sql = "SELECT *,batch_no.id as batch_no_id FROM ".TB_PREF."stock_category as cat INNER JOIN Z_batch_number_master as batch_no ON cat.batch_number_id=batch_no.id WHERE cat.category_id=".  db_escape($category_id);
+        $sql = "SELECT *,batch_no.id as batch_no_id FROM ".TB_PREF."stock_category as cat INNER JOIN z_batch_number_master as batch_no ON cat.batch_number_id=batch_no.id WHERE cat.category_id=".  db_escape($category_id);
         $result = db_fetch_assoc(db_query($sql, "could not query batch number list"));
         $this->cur_number = $result["serial_no"];
         $this->string_number = $result["string_format"];
@@ -109,7 +109,7 @@ class CategoryBatchNumberGenerator{
     }
     
     function save_cur_no(){
-        $sql = "UPDATE Z_batch_number_master SET serial_no=".db_escape($this->cur_number)." WHERE id=".db_escape($this->batch_no_id);
+        $sql = "UPDATE z_batch_number_master SET serial_no=".db_escape($this->cur_number)." WHERE id=".db_escape($this->batch_no_id);
         db_query($sql);
     }
 }

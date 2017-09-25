@@ -103,10 +103,10 @@ while($myrow = db_fetch_assoc($result)){
         continue;
     }
     start_row();
-    label_cell($myrow["Z_batch_number"]);
+    label_cell($myrow["z_batch_number"]);
     qty_cell($myrow["total_per_batch"]);
     amount_cells("", "qty_input[".$count."]",isset($_POST["qty_input"])?$_POST["qty_input"][$count]:"");
-    hidden("batch_number[".$count."]",$myrow["Z_batch_number"]);
+    hidden("batch_number[".$count."]",$myrow["z_batch_number"]);
     hidden("qoh[".$count."]",$myrow["total_per_batch"]);
     end_row();
     $count++;
