@@ -35,9 +35,13 @@ $inspection_plan = db_fetch_assoc(get_inspection_plan($stock["z_inspection_plan_
 $inspection_plan_item = get_inspection_plan_item($inspection_plan["id"]);
 
 if (!isset($_POST["Submit"])){
-    $_SESSION["inspect_".$stock_id] = new Inspection_result($_SESSION["wa_current_user"]->user);
-    $_SESSION["inspect_".$stock_id]->id = $inspection_plan["id"];
-    $_SESSION["inspect_".$stock_id]->inspection_type = $inspect_type;
+    if (!isset($_SESSION["inspection_result"]["inspect_".$stock_id])){
+        $_SESSION["inspect_".$stock_id] = new Inspection_result($_SESSION["wa_current_user"]->user);
+        $_SESSION["inspect_".$stock_id]->id = $inspection_plan["id"];
+        $_SESSION["inspect_".$stock_id]->inspection_type = $inspect_type;
+    }else{
+        $_SESSION["inspect_".$stock_id] = $_SESSION["inspection_result"]["inspect_".$stock_id];
+    }
 }
 
 $js = "";
@@ -115,7 +119,9 @@ function can_process(){
     
     for($i=0;$i<$_POST["no"];$i++){
         $type = $_SESSION["inspect_".$stock_id]->contents[$i]->type;
-        
+        if(!$_SESSION["inspect_".$stock_id]->contents[$i]->is_mandatory){
+            continue;
+        }
         switch ($type) {
             case 1:
                 if(!isset($_POST["answer_".$i]) || $_POST["answer_".$i]==""){
@@ -151,7 +157,7 @@ function can_process(){
 }
 
 function submit_process(){
-    global $Ajax;
+    global $Ajax,$path_to_root;
     $parent_name = $_POST["name"];
     $qty_received = $_POST["qty_received"];
     $qty_accepted = $_POST["qty_accepted"];
@@ -169,7 +175,7 @@ function submit_process(){
     for($i=0;$i<$_POST["no"];$i++){
         $type = $_SESSION["inspect_".$stock_id]->contents[$i]->type;
         
-        if($type==5){
+        if($type==5 && $_SESSION["inspect_".$stock_id]->contents[$i]->is_mandatory){
             $result = process_upload("answer_".$i);
             
             if(!$result){
@@ -193,6 +199,7 @@ function submit_process(){
     unset($_SESSION["inspect_".$stock_id]);
     
     display_notification(_("Inspection finished"));
+    hyperlink_no_params($path_to_root."/purchasing/inspect.php?stock_id=".$stock_id."&name=qty&inspect_type=GRN", _("Edit inspection"));
     
     echo js_set_data_in_parent($parent_name,$qty_accepted);
     end_page();
@@ -214,16 +221,20 @@ start_row();
 label_cells(_("Item name"),$stock["description"]);
 end_row();
 start_row();
-qty_cells(_("Quantity received"),"qty_received");
+qty_cells(_("Quantity received"),"qty_received",$_SESSION["inspect_".$stock_id]->qty_received);
 end_row();
 end_table(2);
 
 start_table();
 $no = 0;
 while(($plan_item=db_fetch($inspection_plan_item))!=null){
+    if(!isset($_SESSION["inspect_".$stock_id]->contents[$no])){
+        $plan_ctn_obj = new Plan_content($plan_item["question"],$plan_item["is_mandatory"],$plan_item["answer_type"],$plan_item["option_list"]);
+        $_SESSION["inspect_".$stock_id]->contents[$no] = $plan_ctn_obj;
+    }else{
+        $plan_ctn_obj = $_SESSION["inspect_".$stock_id]->contents[$no];
+    }
     
-    $plan_ctn_obj = new Plan_content($plan_item["question"],$plan_item["is_mandatory"],$plan_item["answer_type"],$plan_item["option_list"]);
-    $_SESSION["inspect_".$stock_id]->contents[$no] = $plan_ctn_obj;
     start_row();
     $question = $plan_ctn_obj->is_mandatory?$plan_ctn_obj->question."*":$plan_ctn_obj->question;
     label_cells(_("Question"),$question,"");
@@ -233,16 +244,16 @@ while(($plan_item=db_fetch($inspection_plan_item))!=null){
     label_cell(_("Answer"),"class='label'");
     switch ($plan_ctn_obj->type) {
         case 1: //text field
-            text_cells(null,$name);
+            text_cells(null,$name,$plan_ctn_obj->answer);
             break;
         case 2: //yes/no
-            check_cells(null, $name);
+            check_cells(null, $name,$plan_ctn_obj->answer);
             break;
         case 3: //dropdown
-            echo "<td>".array_selector($name, 0,$plan_ctn_obj->options)."</td>";
+            echo "<td>".array_selector($name,$plan_ctn_obj->answer,$plan_ctn_obj->options)."</td>";
             break;
         case 4: //multi select
-            echo "<td>".array_selector($name, 0,$plan_ctn_obj->options,array("multi"=>true))."</td>";
+            echo "<td>".array_selector($name,$plan_ctn_obj->answer,$plan_ctn_obj->options,array("multi"=>true))."</td>";
             break;
         case 5: //uploader
             echo file_cells(null, $name);
@@ -258,13 +269,13 @@ end_table(1);
 start_table();
 hidden("no",$no);
 start_row();
-qty_cells(_("Quantity accepted"),"qty_accepted");
+qty_cells(_("Quantity accepted"),"qty_accepted",$_SESSION["inspect_".$stock_id]->qty_accepted);
 end_row();
 start_row();
-text_cells(_("Rejection reason"),"reason");
+text_cells(_("Rejection reason"),"reason",$_SESSION["inspect_".$stock_id]->reject_reason);
 end_row();
 start_row();
-text_cells(_("Driver signature"),"signature");
+text_cells(_("Driver signature"),"signature",$_SESSION["inspect_".$stock_id]->signature);
 end_row();
 end_table();
 

@@ -6,7 +6,7 @@ function get_all_inspection_plan(){
     return db_query($sql, _("Can not get inspection plan header"));
 }
 
-function get_inspection_plan($id){
+function get_inspection_plan($id,$type="grn"){
     $sql = "SELECT * FROM z_inspection_plan_header WHERE id=".db_escape($id);
     return db_query($sql, _("Can not get inspection plan header"));
 }

@@ -41,7 +41,6 @@ function inspection_plan_content($cart) {
     $k = 0;
     $id = find_submit('Edit');
     foreach ($cart->plan_contents as $line_no => $content) {
-        ConsoleDebug($content);
         if ($id != $line_no) {
             alt_table_row_color($k);
             label_cell($content->question);

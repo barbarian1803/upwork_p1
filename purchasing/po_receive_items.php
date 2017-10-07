@@ -336,6 +336,7 @@ if (isset($_POST['ProcessGoodsReceived'])) {
 
 //--------------------------------------------------------------------------------------------------
 if (!isset($_POST['ProcessGoodsReceived'])) {
+    unset($_SESSION["inspection_result"]);
     $_SESSION["inspection_result"] = array();
 }
 start_form();
