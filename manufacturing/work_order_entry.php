@@ -13,8 +13,10 @@
 $page_security = 'SA_WORKORDERENTRY';
 $path_to_root = "..";
 include_once($path_to_root . "/admin/includes/batch_number_class.php");
+include_once($path_to_root . "/mod_inspection_plan/includes/inspection_plan_class.inc");
 include_once($path_to_root . "/includes/session.inc");
 include_once($path_to_root . "/admin/db/mod_batch_number_db.php");
+include_once($path_to_root . "/mod_inspection_plan/db/inspection_result_db.php");
 include_once($path_to_root . "/includes/date_functions.inc");
 include_once($path_to_root . "/includes/data_checks.inc");
 
@@ -30,7 +32,7 @@ if (user_use_date_picker())
 page(_($help_context = "Work Order Entry"), false, false, "", $js);
 
 
-if(!isset($_POST['ADD_ITEM'])){
+if (!isset($_POST['ADD_ITEM'])) {
     $_SESSION["batch_holder"] = new BatchNumberHolder();
 }
 $batch_holder = &$_SESSION["batch_holder"];
@@ -218,7 +220,7 @@ if (isset($_POST['ADD_ITEM']) && can_process()) {
         $_POST['cr_acc'] = "";
     if (!isset($_POST['cr_lab_acc']))
         $_POST['cr_lab_acc'] = "";
-    $id = add_work_order($_POST['wo_ref'], $_POST['StockLocation'], input_num('quantity'), $_POST['stock_id'], $_POST['type'], $_POST['date_'], $_POST['RequDate'], $_POST['memo_'], input_num('Costs'), $_POST['cr_acc'], input_num('Labour'), $_POST['cr_lab_acc'],$_POST["batch_number"]);
+    $id = add_work_order($_POST['wo_ref'], $_POST['StockLocation'], input_num('quantity'), $_POST['stock_id'], $_POST['type'], $_POST['date_'], $_POST['RequDate'], $_POST['memo_'], input_num('Costs'), $_POST['cr_acc'], input_num('Labour'), $_POST['cr_lab_acc'], $_POST["batch_number"]);
     $_SESSION["batch_holder"]->save_current_no();
     unset($_SESSION["batch_holder"]);
     new_doc_date($_POST['date_']);
@@ -270,6 +272,12 @@ if (get_post('_type_update')) {
     $Ajax->activate('_page_body');
 }
 //-------------------------------------------------------------------------------------
+
+if (!isset($_POST['ADD_ITEM'])) {
+    unset($_SESSION["inspection_result"]);
+    $_SESSION["inspection_result"] = array();
+}
+
 start_form();
 
 start_table(TABLESTYLE2);
@@ -334,7 +342,7 @@ if (get_post('released')) {
     label_row(_("Destination Location:"), $myrow["location_name"]);
 } else {
     stock_manufactured_items_list_row(_("Item:"), 'stock_id', null, false, true);
-    if (list_updated('stock_id')){
+    if (list_updated('stock_id')) {
         $Ajax->activate('quantity');
     }
 
@@ -354,9 +362,15 @@ if (get_post('type') == WO_ADVANCED) {
     date_row(_("Date") . ":", 'date_', '', true);
     date_row(_("Date Required By") . ":", 'RequDate', '', null, $SysPrefs->default_wo_required_by());
     hidden('batch_number', '');
-}
-else {
-    qty_row(_("Quantity:"), 'quantity', null, null, null, $dec);
+}else {
+    
+    $item = get_item($_POST['stock_id']);
+    if($item["z_inspection_plan_id"]>0){
+        $inspect_link = viewer_link("Inspect", 'purchasing/inspect.php?stock_id=' .$_POST['stock_id']."&name=quantity&inspect_type=WO");
+        qty_row_readonly(_("Quantity:"), 'quantity', null, null, $inspect_link, $dec);
+    }else{
+        qty_row(_("Quantity:"), 'quantity', null, null, null, $dec);
+    }
     //TO DO: if the type of manufacture is not advance manufactur, batch number should be set from the form
     $batch_number = $batch_holder->get_batch_obj_by_stock_id($_POST['stock_id']);
     text_row(_("Batch number"), "batch_number", $batch_number->get_next_number(), 15, 255);

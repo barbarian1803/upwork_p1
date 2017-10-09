@@ -915,7 +915,7 @@ function qty_cells_readonly($label, $name, $init=null, $params=null, $post_label
 	if (!isset($dec))
 	  	$dec = user_qty_dec();
 
-              amount_cells_ex_readonly($label, $name, 15, 15, $init, $params, $post_label, $dec);
+        amount_cells_ex_readonly($label, $name, 15, 15, $init, $params, $post_label, $dec);
 }
 
 function qty_row($label, $name, $init=null, $params=null, $post_label=null, $dec=null)
@@ -925,6 +925,16 @@ function qty_row($label, $name, $init=null, $params=null, $post_label=null, $dec
 
 	echo "<tr>";
 	amount_cells($label, $name, $init, $params, $post_label, $dec);
+	echo "</tr>\n";
+}
+
+function qty_row_readonly($label, $name, $init=null, $params=null, $post_label=null, $dec=null)
+{
+	if (!isset($dec))
+	  	$dec = user_qty_dec();
+
+	echo "<tr>";
+	amount_cells_readonly($label, $name, $init, $params, $post_label, $dec);
 	echo "</tr>\n";
 }
 
