@@ -183,9 +183,14 @@ if (!isset($_POST['ProductionType']))
     $_POST['ProductionType'] = 1;
 
 yesno_list_row(_("Type:"), 'ProductionType', $_POST['ProductionType'], _("Produce Finished Items"), _("Return Items to Work Order"));
-
-small_qty_row(_("Quantity:"), 'quantity', null, null, null, $dec);
-text_row(_("Batch number"), "batch_number", $batch_number->get_next_number(), 15, 255);
+$item = get_item($wo_details["stock_id"]);
+if($item["z_inspection_plan_id"]>0){
+    $inspect_link = viewer_link("Inspect", 'purchasing/inspect.php?stock_id=' .$wo_details["stock_id"]."&name=quantity&inspect_type=WO");
+    qty_cells_readonly(_("Quantity:"), 'quantity', null, null, $inspect_link, $dec);
+}else{
+    qty_cells(_("Quantity:"), 'quantity', null, null, null, $dec);
+}
+text_row(_("Batch number"), "batch_number", $batch_number->get_next_number(), 25, 255);
 textarea_row(_("Memo:"), 'memo_', null, 40, 3);
 
 end_table(1);
