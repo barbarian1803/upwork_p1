@@ -78,6 +78,7 @@ function work_order_produce($woid, $ref, $quantity, $date_, $memo, $close_wo, $b
 
         $id_stock_moves = add_stock_move(ST_WORKORDER, $product["stock_id"], $woid, $product["loc_code"], $date_, $ref, $product['units_issued'] + $quantity, $unit_cost);
 
+        //SET BATCH NUMBER
         set_batch_number_in_stock_moves($batch_number, $id_stock_moves);
 
         update_material_cost($product['stock_id'], $product['units_issued'] + $quantity, $unit_cost, $date_);
@@ -88,7 +89,22 @@ function work_order_produce($woid, $ref, $quantity, $date_, $memo, $close_wo, $b
 
     $Refs->save(ST_MANURECEIVE, $id, $ref);
     add_audit_trail(ST_MANURECEIVE, $id, $date_, _("Production."));
+        
+    //INSERT INSPECTION RESULT
+    foreach ($_SESSION["inspection_result"] as $key => $insp_obj) {
+        $insp_obj->supplier = -1;
+        $insp_obj->grn_batch_id = $id;      //for wor order receive, id is the id for table wo_manufacture
 
+        $insp_obj->grn_item_id = 1;
+        $insp_obj->batch_no = $batch_number;
+
+        $inspect_header_id = insert_inspect_item_header($insp_obj);
+
+        foreach ($insp_obj->contents as $content) {
+            insert_inspect_item_content($inspect_header_id, $content);
+        }
+    }
+    
     $args->trans_no = $id;
     hook_db_postwrite($args, ST_MANURECEIVE);
 

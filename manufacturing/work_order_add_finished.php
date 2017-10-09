@@ -13,12 +13,12 @@
 $page_security = 'SA_MANUFRECEIVE';
 $path_to_root = "..";
 include_once($path_to_root . "/admin/includes/batch_number_class.php");
-
+include_once($path_to_root . "/mod_inspection_plan/includes/inspection_plan_class.inc");
 include_once($path_to_root . "/includes/session.inc");
 include_once($path_to_root . "/includes/inventory.inc");
 
 include_once($path_to_root . "/admin/db/mod_batch_number_db.php");
-
+include_once($path_to_root . "/mod_inspection_plan/db/inspection_result_db.php");
 include_once($path_to_root . "/includes/date_functions.inc");
 include_once($path_to_root . "/gl/includes/db/gl_db_bank_trans.inc");
 
@@ -152,6 +152,11 @@ if ((isset($_POST['Process']) || isset($_POST['ProcessAndClose'])) && can_proces
     $_SESSION["batch_holder"]->save_current_no();
     unset($_SESSION["batch_holder"]);
     meta_forward($_SERVER['PHP_SELF'], "AddedID=" . $_POST['selected_id'] . "&date=" . $_POST['date_']);
+}
+
+if (!isset($_POST['Process'])) {
+    unset($_SESSION["inspection_result"]);
+    $_SESSION["inspection_result"] = array();
 }
 
 //-------------------------------------------------------------------------------------
