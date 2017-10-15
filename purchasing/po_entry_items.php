@@ -480,7 +480,7 @@ if (isset($_POST['CancelUpdate']) || isset($_POST['UpdateLine'])) {
     line_start_focus();
 }
 
-if (!isset($_POST["commit"])){
+if (!isset($_POST)){
     unset($_SESSION["inspection_result"]);
     $_SESSION["inspection_result"]=array();
 }
