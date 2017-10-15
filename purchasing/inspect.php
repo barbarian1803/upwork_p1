@@ -117,6 +117,13 @@ function can_process(){
         return false;
     }
     
+    if($_POST["qty_accepted"]<$_POST["qty_received"]){
+        if($_POST["reason"]==""){
+            display_warning(_("Please enter the rejection reason"));
+            return false;
+        }
+    }
+    
     for($i=0;$i<$_POST["no"];$i++){
         $type = $_SESSION["inspect_".$stock_id]->contents[$i]->type;
         if(!$_SESSION["inspect_".$stock_id]->contents[$i]->is_mandatory){
@@ -275,7 +282,7 @@ start_row();
 text_cells(_("Rejection reason"),"reason",$_SESSION["inspect_".$stock_id]->reject_reason);
 end_row();
 start_row();
-text_cells(_("Driver signature"),"signature",$_SESSION["inspect_".$stock_id]->signature);
+textarea_cells(_("Driver signature"),"signature",$_SESSION["inspect_".$stock_id]->signature,25,5);
 end_row();
 end_table();
 
