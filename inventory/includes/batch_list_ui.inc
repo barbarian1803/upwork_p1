@@ -83,3 +83,33 @@ function process_lot_to_parent($data){
     </script>    
     ";
 }
+
+function js_calculate_rejected(){
+    return "
+        
+        var received = document.getElementsByName('qty_received')[0];
+        var accepted = document.getElementsByName('qty_accepted')[0];
+        var rejected = document.getElementsByName('qty_rejected')[0];
+        received.addEventListener('change',function(){
+            min = received.value - accepted.value;
+            if(min>=0){
+                rejected.value = min;
+            }else{
+                rejected.value = 0;
+                received.value = 0;
+                accepted.value = 0;
+            }
+        });
+        accepted.addEventListener('change',function(){
+            min = received.value - accepted.value;
+            if(min>=0){
+                rejected.value = min;
+            }else{
+                rejected.value = 0;
+                received.value = 0;
+                accepted.value = 0;
+            }
+        });
+        
+    ";
+}

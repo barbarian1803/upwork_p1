@@ -44,12 +44,15 @@ if (!isset($_POST["Submit"])){
     }
 }
 
+
 $js = "";
 
 if ($SysPrefs->use_popup_windows)
     $js .= get_js_open_window(800, 500);
 if (user_use_date_picker())
     $js .= get_js_date_picker();
+
+$js.=js_calculate_rejected();
 $_SESSION['page_title'] = _($help_context = "Inspection");
  
 page($_SESSION['page_title'], true, false, "", $js);
@@ -122,6 +125,11 @@ function can_process(){
             display_warning(_("Please enter the rejection reason"));
             return false;
         }
+    }
+    
+    if($_POST["qty_accepted"]>$_POST["qty_received"]){
+        display_warning(_("Quantity accepted should be less or equal quantity received"));
+        return false;
     }
     
     for($i=0;$i<$_POST["no"];$i++){
@@ -230,6 +238,12 @@ end_row();
 start_row();
 qty_cells(_("Quantity received"),"qty_received",$_SESSION["inspect_".$stock_id]->qty_received);
 end_row();
+start_row();
+qty_cells(_("Quantity accepted"),"qty_accepted",$_SESSION["inspect_".$stock_id]->qty_accepted);
+end_row();
+start_row();
+qty_cells_readonly(_("Quantity rejected"),"qty_rejected");
+end_row();
 end_table(2);
 
 start_table();
@@ -275,9 +289,6 @@ end_table(1);
 
 start_table();
 hidden("no",$no);
-start_row();
-qty_cells(_("Quantity accepted"),"qty_accepted",$_SESSION["inspect_".$stock_id]->qty_accepted);
-end_row();
 start_row();
 text_cells(_("Rejection reason"),"reason",$_SESSION["inspect_".$stock_id]->reject_reason);
 end_row();
